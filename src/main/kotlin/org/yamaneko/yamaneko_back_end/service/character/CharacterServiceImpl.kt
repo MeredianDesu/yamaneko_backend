@@ -1,6 +1,7 @@
 package org.yamaneko.yamaneko_back_end.service.character
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.yamaneko.yamaneko_back_end.dto.character.CharacterDTO
 import org.yamaneko.yamaneko_back_end.dto.character.CharacterRequestDTO
@@ -12,6 +13,9 @@ import org.yamaneko.yamaneko_back_end.repository.CharacterRepository
 class CharacterServiceImpl: CharacterService {
 
     private val characterMapper = CharacterMapper()
+
+    @Value("\${yamaneko.server}")
+    private lateinit var filesServerUrl: String
 
     @Autowired
     private lateinit var characterRepository: CharacterRepository
@@ -25,14 +29,10 @@ class CharacterServiceImpl: CharacterService {
         val character = Character()
         character.originalName = request.originalName
         character.translatedName = request.translatedName
-        character.image = request.image ?: CHARACTER_IMG_URL
+        character.image = request.image ?: "${filesServerUrl}var/yamaneko_files/mascot.jfif"
 
         val savedCharacter = characterRepository.save( character )
 
         return characterMapper.toDTO( savedCharacter )
-    }
-
-    companion object{
-        private const val CHARACTER_IMG_URL = "var/yamaneko_files/mascot.jfif"
     }
 }

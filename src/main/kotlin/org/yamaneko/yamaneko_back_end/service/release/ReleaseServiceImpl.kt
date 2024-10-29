@@ -1,6 +1,7 @@
 package org.yamaneko.yamaneko_back_end.service.release
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.yamaneko.yamaneko_back_end.dto.RolesDTO
 import org.yamaneko.yamaneko_back_end.dto.release.ReleaseDTO
@@ -28,6 +29,9 @@ class ReleaseServiceImpl: ReleaseService {
 
     @Autowired
     private lateinit var releaseRepository: ReleaseRepository
+
+    @Value("\${yamaneko.server}")
+    private lateinit var filesServerUrl: String
 
     private val releaseMapper = ReleaseMapper()
 
@@ -62,8 +66,8 @@ class ReleaseServiceImpl: ReleaseService {
         val release = Release().apply {
             originalName = request.originalName
             translatedName = request.translatedName
-            posterImageUrl = request.posterImageUrl ?: PREVIEW_IMG_URL
-            previewVideoUrl = request.previewVideoUrl ?: PREVIEW_VIDEO_URL
+            posterImageUrl = request.posterImageUrl ?: "${filesServerUrl}var/yamaneko_files/mascot.jfif"
+            previewVideoUrl = request.previewVideoUrl ?: "${filesServerUrl}var/yamaneko_files/preview.mp4"
             videoUrl = request.videoUrl
             sinopsis = request.sinopsis
             info = request.info
@@ -86,10 +90,5 @@ class ReleaseServiceImpl: ReleaseService {
         val savedRelease = releaseRepository.save( release )
 
         return releaseMapper.toDTO( savedRelease )
-    }
-
-    companion object{
-        private const val PREVIEW_VIDEO_URL = "var/yamaneko_files/preview.mp4"
-        private const val PREVIEW_IMG_URL = "var/yamaneko_files/mascot.jfif"
     }
 }
