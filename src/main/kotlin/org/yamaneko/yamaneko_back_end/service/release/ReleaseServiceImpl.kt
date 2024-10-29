@@ -89,7 +89,7 @@ class ReleaseServiceImpl: ReleaseService {
     }
 
     companion object{
-        private const val PREVIEW_VIDEO_URL = "/var/yamaneko_files/preview.mp4"
-        private const val PREVIEW_IMG_URL = "/var/yamaneko_files/mascot.jfif"
+        private const val PREVIEW_VIDEO_URL = "var/yamaneko_files/preview.mp4"
+        private const val PREVIEW_IMG_URL = "var/yamaneko_files/mascot.jfif"
     }
 }
