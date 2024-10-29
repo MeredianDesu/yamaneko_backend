@@ -33,6 +33,6 @@ class CharacterServiceImpl: CharacterService {
     }
 
     companion object{
-        private const val CHARACTER_IMG_URL = "/var/yamaneko_files/mascot.jfif"
+        private const val CHARACTER_IMG_URL = "var/yamaneko_files/mascot.jfif"
     }
 }
