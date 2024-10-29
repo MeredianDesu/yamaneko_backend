@@ -1,7 +1,6 @@
 package org.yamaneko.yamaneko_back_end.mappers
 
-import org.yamaneko.yamaneko_back_end.dto.character.CharacterDTO
-import org.yamaneko.yamaneko_back_end.dto.dubber.DubberDTO
+import org.yamaneko.yamaneko_back_end.dto.RolesDTO
 import org.yamaneko.yamaneko_back_end.dto.genre.GenreDTO
 import org.yamaneko.yamaneko_back_end.dto.release.ReleaseDTO
 import org.yamaneko.yamaneko_back_end.entity.Release
@@ -19,18 +18,13 @@ class ReleaseMapper{
             videoUrl = release.videoUrl,
             sinopsis = release.sinopsis,
             info = release.info,
-            dubbers = release.dubbers.map{ i ->
-                DubberDTO(
-                    dubberId = i.dubberId,
-                    dubberName = i.dubberName,
-                    characters = i.characters.map { character ->
-                        CharacterDTO(
-                            id = character.id,
-                            originalName = character.originalName,
-                            translatedName = character.translatedName,
-                            image = character.image,
-                        )
-                    }
+            dubbers = release.dubbers.map{ dubber ->
+                RolesDTO(
+                    characterId = dubber.characterId,
+                    characterOriginalName = dubber.characterOriginalName,
+                    characterTranslatedName = dubber.characterTranslatedName,
+                    characterImage = dubber.characterImage,
+                    dubberName = dubber.dubberName,
                 )
             },
             genres = release.genres.map { genre ->

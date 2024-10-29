@@ -1,11 +1,8 @@
 package org.yamaneko.yamaneko_back_end.service.release
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
-import org.yamaneko.yamaneko_back_end.dto.character.CharacterDTO
-import org.yamaneko.yamaneko_back_end.dto.dubber.DubberDTO
+import org.yamaneko.yamaneko_back_end.dto.RolesDTO
 import org.yamaneko.yamaneko_back_end.dto.release.ReleaseDTO
 import org.yamaneko.yamaneko_back_end.dto.release.ReleaseRequestPost
 import org.yamaneko.yamaneko_back_end.entity.Release
@@ -62,7 +59,6 @@ class ReleaseServiceImpl: ReleaseService {
         val genresId = request.genres
         val genresList = genreRepository.findAllById( genresId )
 
-
         val release = Release().apply {
             originalName = request.originalName
             translatedName = request.translatedName
@@ -71,20 +67,17 @@ class ReleaseServiceImpl: ReleaseService {
             videoUrl = request.videoUrl
             sinopsis = request.sinopsis
             info = request.info
-            dubbers = request.dubbers.map {
-                val charactersList = characterRepository.findAllById( it.charactersId )
-                DubberDTO(
-                    dubberId = it.dubberId,
-                    dubberName = teamRepository.findById( it.dubberId ).get().name,
-                    characters = charactersList.map{ character ->
-                        CharacterDTO(
-                            id = character.id,
-                            originalName = character.originalName,
-                            translatedName = character.translatedName,
-                            image = character.image
-                        )
-                    }
-                )
+            dubbers = request.dubbers.flatMap { role ->
+                val charactersList = characterRepository.findAllById( role.charactersId )
+                charactersList.map{ character ->
+                    RolesDTO(
+                        characterId = character.id,
+                        characterOriginalName = character.originalName,
+                        characterTranslatedName = character.translatedName,
+                        characterImage = character.image,
+                        dubberName = teamRepository.findById( role. dubberId ).get().name
+                    )
+                }
             }.toMutableList()
             genres = genresList.toMutableSet()
             uploadedAt = date

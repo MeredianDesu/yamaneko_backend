@@ -1,6 +1,6 @@
 package org.yamaneko.yamaneko_back_end.dto.release
 
-import org.yamaneko.yamaneko_back_end.dto.dubber.DubberDTO
+import org.yamaneko.yamaneko_back_end.dto.RolesDTO
 import org.yamaneko.yamaneko_back_end.dto.genre.GenreDTO
 
 data class ReleaseDTO(
@@ -12,7 +12,7 @@ data class ReleaseDTO(
     val videoUrl: String?,
     val sinopsis: String,
     val info: String,
-    val dubbers: List<DubberDTO>,
+    val dubbers: List<RolesDTO>,
     val genres: List<GenreDTO>,
     val uploadedAt: String
 )

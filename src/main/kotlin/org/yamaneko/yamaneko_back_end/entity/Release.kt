@@ -1,8 +1,8 @@
 package org.yamaneko.yamaneko_back_end.entity
 
 import jakarta.persistence.*
-import org.yamaneko.yamaneko_back_end.config.MutableListConverter
-import org.yamaneko.yamaneko_back_end.dto.dubber.DubberDTO
+import org.yamaneko.yamaneko_back_end.config.RolesDTOConverter
+import org.yamaneko.yamaneko_back_end.dto.RolesDTO
 
 @Entity
 @Table( name = "releases" )
@@ -35,8 +35,8 @@ open class Release{
 
 
     @Column( name = "dubbers", columnDefinition = "text" )
-    @Convert( converter = MutableListConverter::class )
-    internal var dubbers: MutableList<DubberDTO> = mutableListOf()
+    @Convert( converter = RolesDTOConverter::class )
+    internal var dubbers: MutableList<RolesDTO> = mutableListOf()
 
     @ManyToMany
     @JoinTable(
