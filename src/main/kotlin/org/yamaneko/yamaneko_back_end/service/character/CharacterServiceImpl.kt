@@ -29,7 +29,7 @@ class CharacterServiceImpl: CharacterService {
         val character = Character()
         character.originalName = request.originalName
         character.translatedName = request.translatedName
-        character.image = request.image ?: "${filesServerUrl}var/yamaneko_files/mascot.jfif"
+        character.image = request.image ?: "${filesServerUrl}mascot.jfif"
 
         val savedCharacter = characterRepository.save( character )
 

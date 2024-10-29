@@ -66,8 +66,8 @@ class ReleaseServiceImpl: ReleaseService {
         val release = Release().apply {
             originalName = request.originalName
             translatedName = request.translatedName
-            posterImageUrl = request.posterImageUrl ?: "${filesServerUrl}var/yamaneko_files/mascot.jfif"
-            previewVideoUrl = request.previewVideoUrl ?: "${filesServerUrl}var/yamaneko_files/preview.mp4"
+            posterImageUrl = request.posterImageUrl ?: "${filesServerUrl}mascot.jfif"
+            previewVideoUrl = request.previewVideoUrl ?: "${filesServerUrl}preview.mp4"
             videoUrl = request.videoUrl
             sinopsis = request.sinopsis
             info = request.info
