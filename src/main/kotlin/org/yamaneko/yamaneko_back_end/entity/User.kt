@@ -16,7 +16,7 @@ open class User{
     @Column( name = "password" )
     internal var password: String = ""
 
-    @Column( name = "email" )
+    @Column( name = "email", unique = true )
     internal var email: String = ""
 
     @Column( name = "roles" )
