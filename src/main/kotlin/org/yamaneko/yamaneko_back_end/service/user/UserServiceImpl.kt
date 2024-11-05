@@ -6,9 +6,11 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.yamaneko.yamaneko_back_end.dto.user.UserDTO
 import org.yamaneko.yamaneko_back_end.dto.user.UserRegistrationRequest
+import org.yamaneko.yamaneko_back_end.entity.RefreshTokens
 import org.yamaneko.yamaneko_back_end.entity.User
 import org.yamaneko.yamaneko_back_end.entity.UserTokens
 import org.yamaneko.yamaneko_back_end.mappers.UserMapper
+import org.yamaneko.yamaneko_back_end.repository.UserRefreshTokensRepository
 import org.yamaneko.yamaneko_back_end.repository.UserRepository
 import org.yamaneko.yamaneko_back_end.repository.UserTokensRepository
 import org.yamaneko.yamaneko_back_end.utils.DateFormatter
@@ -23,6 +25,9 @@ class UserServiceImpl: UserService {
 
     @Autowired
     lateinit var userTokensRepository: UserTokensRepository
+
+    @Autowired
+    lateinit var userRefreshTokensRepository: UserRefreshTokensRepository
 
     @Autowired
     lateinit var jwtUtil: JwtUtil
@@ -56,6 +61,7 @@ class UserServiceImpl: UserService {
         userRepository.save( user )
 
         val token = jwtUtil.generateToken( user )
+        val refreshToken = jwtUtil.createRefreshToken()
 
         val userTokens = UserTokens()
         userTokens.user = user
@@ -63,9 +69,16 @@ class UserServiceImpl: UserService {
         userTokens.createdAt = dateFormatter.dateToString( jwtUtil.extractCreation( token )!! )
         userTokens.expiresAt = dateFormatter.dateToString( jwtUtil.extractExpiration( token )!! )
 
-        userTokensRepository.save( userTokens )
+        val userRefreshTokens = RefreshTokens()
+        userRefreshTokens.user = user
+        userRefreshTokens.tokenHash = jwtUtil.hashJwtToken( refreshToken["token"]!! )
+        userRefreshTokens.createdAt = refreshToken["issuedAt"]!!
+        userRefreshTokens.expiresAt = refreshToken["expirationDate"]!!
 
-        return ResponseEntity.status( HttpStatus.CREATED ).body( token )
+        userTokensRepository.save( userTokens )
+        userRefreshTokensRepository.save( userRefreshTokens )
+
+        return ResponseEntity.status( HttpStatus.CREATED ).body( "$token|${refreshToken["token"]!!}" )
     }
 
     private fun validateUserRequest( request: UserRegistrationRequest ): ResponseEntity<String> {

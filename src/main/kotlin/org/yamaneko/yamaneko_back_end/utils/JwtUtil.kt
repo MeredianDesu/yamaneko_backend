@@ -3,6 +3,7 @@ package org.yamaneko.yamaneko_back_end.utils
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.yamaneko.yamaneko_back_end.entity.User
@@ -12,6 +13,9 @@ import java.util.*
 
 @Component
 class JwtUtil {
+
+    @Autowired
+    lateinit var dateFormatter: DateFormatter
 
     @Value("\${jwt.secret}")
     private var secretKey: String = ""
@@ -65,7 +69,7 @@ class JwtUtil {
                 .parseSignedClaims( token )
                 .payload
         } catch ( e: Exception ){
-            println( "Не удалось спарсить токен" )
+            println( "Cannot parse token" )
             null
         }
     }
@@ -75,5 +79,17 @@ class JwtUtil {
         val hashBytes = digest.digest( token.toByteArray() )
 
         return Base64.getEncoder().encodeToString( hashBytes )
+    }
+
+    fun createRefreshToken(): Map<String, String>{
+        val token = UUID.randomUUID().toString()
+        val issuedAt = dateFormatter.dateToString( Date() )
+        val expirationDate = dateFormatter.dateToString( Date( System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000 ) )
+
+        return mapOf(
+            "token" to token,
+            "issuedAt" to issuedAt,
+            "expirationDate" to expirationDate
+        )
     }
 }

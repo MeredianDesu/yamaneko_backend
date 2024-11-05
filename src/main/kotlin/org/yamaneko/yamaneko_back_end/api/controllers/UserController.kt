@@ -4,8 +4,10 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.yamaneko.yamaneko_back_end.dto.user.RegisteredUserResponse
 import org.yamaneko.yamaneko_back_end.dto.user.UserDTO
 import org.yamaneko.yamaneko_back_end.dto.user.UserRegistrationRequest
 import org.yamaneko.yamaneko_back_end.mappers.UserMapper
@@ -46,9 +48,21 @@ class UserController(
             ApiResponse( responseCode = "422", description = "Password mismatch"),
         ]
     )
-    fun createUser( @RequestBody request: UserRegistrationRequest ): ResponseEntity<String>{
-        val response = userService.registerUser( request )
+    fun createUser( @RequestBody request: UserRegistrationRequest ): ResponseEntity<Any>{
+        val status = userService.registerUser( request )
 
-        return response
+        if( status.statusCode == HttpStatus.CONFLICT )
+            return ResponseEntity.status( HttpStatus.CONFLICT ).body( "A user with this email address is already registered" )
+        if( status.statusCode == HttpStatus.UNPROCESSABLE_ENTITY )
+            return ResponseEntity.status( HttpStatus.UNPROCESSABLE_ENTITY ).body( "Password doesn't match" )
+
+        val tokens = status.body?.split('|')
+
+        val response = RegisteredUserResponse(
+            accessToken = tokens?.get(0),
+            refreshToken = tokens?.get(1)
+        )
+
+        return ResponseEntity.status( HttpStatus.CREATED ).body( response )
     }
 }
