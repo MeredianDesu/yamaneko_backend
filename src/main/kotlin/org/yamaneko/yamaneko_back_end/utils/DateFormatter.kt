@@ -9,9 +9,11 @@ import java.util.*
 @Component
 class DateFormatter {
 
+    private final val pattern = "dd/MM/yyyy HH:mm:ss"
+    val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern( pattern )
+
     fun dateToString( date: Date ): String {
         val localDateTime = LocalDateTime.ofInstant( date.toInstant(), ZoneId.systemDefault() )
-        val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
 
         return localDateTime.format( formatter )
     }

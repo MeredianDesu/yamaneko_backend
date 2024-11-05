@@ -3,8 +3,8 @@ package org.yamaneko.yamaneko_back_end.entity
 import jakarta.persistence.*
 
 @Entity
-@Table( name = "refresh_tokens" )
-class RefreshTokens {
+@Table( name = "user_tokens" )
+class UserToken {
 
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY )

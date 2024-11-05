@@ -74,14 +74,14 @@ class JwtUtil {
         }
     }
 
-    fun hashJwtToken( token: String ): String{
+    fun hashToken( token: String ): String{
         val digest = MessageDigest.getInstance("SHA-256")
         val hashBytes = digest.digest( token.toByteArray() )
 
         return Base64.getEncoder().encodeToString( hashBytes )
     }
 
-    fun createRefreshToken(): Map<String, String>{
+    fun generateRefreshToken(): Map<String, String>{
         val token = UUID.randomUUID().toString()
         val issuedAt = dateFormatter.dateToString( Date() )
         val expirationDate = dateFormatter.dateToString( Date( System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000 ) )

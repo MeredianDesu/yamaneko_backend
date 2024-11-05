@@ -3,11 +3,13 @@ package org.yamaneko.yamaneko_back_end.api.controllers
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import org.yamaneko.yamaneko_back_end.dto.user.RegisteredUserResponse
+import org.yamaneko.yamaneko_back_end.dto.user.UserAuthRequest
+import org.yamaneko.yamaneko_back_end.dto.user.UserAuthResponse
 import org.yamaneko.yamaneko_back_end.dto.user.UserDTO
 import org.yamaneko.yamaneko_back_end.dto.user.UserRegistrationRequest
 import org.yamaneko.yamaneko_back_end.mappers.UserMapper
@@ -39,7 +41,7 @@ class UserController(
     }
 
     @Operation( summary = "Create a new user." )
-    @PostMapping("")
+    @PostMapping("/register")
     @ApiResponses(
         value = [
             ApiResponse( responseCode = "201", description = "User created"),
@@ -48,7 +50,7 @@ class UserController(
             ApiResponse( responseCode = "422", description = "Password mismatch"),
         ]
     )
-    fun createUser( @RequestBody request: UserRegistrationRequest ): ResponseEntity<Any>{
+    fun createUser( @Valid @RequestBody request: UserRegistrationRequest ): ResponseEntity<Any>{
         val status = userService.registerUser( request )
 
         if( status.statusCode == HttpStatus.CONFLICT )
@@ -58,11 +60,32 @@ class UserController(
 
         val tokens = status.body?.split('|')
 
-        val response = RegisteredUserResponse(
+        val response = UserAuthResponse(
             accessToken = tokens?.get(0),
             refreshToken = tokens?.get(1)
         )
 
         return ResponseEntity.status( HttpStatus.CREATED ).body( response )
+    }
+
+    @Operation( summary = "Auth user." )
+    @PostMapping( "/login" )
+//    @ApiResponses()
+    fun authUser( @RequestBody request: UserAuthRequest ): ResponseEntity<Any>{
+        val status = userService.authUser( request )
+
+        if( status.statusCode == HttpStatus.NOT_FOUND )
+            return ResponseEntity.status( HttpStatus.NOT_FOUND ).body( "User not found" )
+        if( status.statusCode == HttpStatus.UNAUTHORIZED )
+            return ResponseEntity.status( HttpStatus.UNAUTHORIZED ).body( "Invalid credentials" )
+
+        val tokens = status.body?.split('|')
+
+        val response = UserAuthResponse(
+            accessToken = tokens?.get(0),
+            refreshToken = tokens?.get(1)
+        )
+
+        return ResponseEntity.status( HttpStatus.OK ).body( response )
     }
 }
