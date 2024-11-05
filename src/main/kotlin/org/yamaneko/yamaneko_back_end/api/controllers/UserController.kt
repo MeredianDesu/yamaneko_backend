@@ -1,6 +1,8 @@
 package org.yamaneko.yamaneko_back_end.api.controllers
 
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -22,6 +24,13 @@ class UserController(
 
     @Operation( summary = "Get all users." )
     @GetMapping("")
+    @ApiResponses(
+        value = [
+            ApiResponse( responseCode = "200", description = "OK"),
+            ApiResponse( responseCode = "204", description = "No content"),
+            ApiResponse( responseCode = "400", description = "Bad request"),
+        ]
+    )
     fun getUsers(): List<UserDTO> {
 
         return userService.getAllUsers()
@@ -29,20 +38,17 @@ class UserController(
 
     @Operation( summary = "Create a new user." )
     @PostMapping("")
+    @ApiResponses(
+        value = [
+            ApiResponse( responseCode = "201", description = "User created"),
+            ApiResponse( responseCode = "400", description = "Bad request"),
+            ApiResponse( responseCode = "409", description = "User already exists"),
+            ApiResponse( responseCode = "422", description = "Password mismatch"),
+        ]
+    )
     fun createUser( @RequestBody request: UserRegistrationRequest ): ResponseEntity<String>{
-//        val response = UserDTO(
-//            id = savedUser.id,
-//            username = request.username,
-//            password = savedUser.password,
-//            email = request.email,
-//            roles = savedUser.roles,
-//            avatar = savedUser.avatar,
-//            createdAt = savedUser.createdAt,
-//        )
-
         val response = userService.registerUser( request )
 
         return response
-
     }
 }

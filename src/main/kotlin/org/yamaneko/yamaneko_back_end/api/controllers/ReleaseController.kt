@@ -2,6 +2,8 @@ package org.yamaneko.yamaneko_back_end.api.controllers
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -16,6 +18,14 @@ class ReleaseController( @Autowired private val releaseService: ReleaseService )
 
     @Operation( summary = "Get all releases from DB." )
     @GetMapping("")
+    @ApiResponses(
+        value = [
+            ApiResponse( responseCode = "200", description = "OK"),
+            ApiResponse( responseCode = "203", description = "No content"),
+            ApiResponse( responseCode = "400", description = "Bad request"),
+            ApiResponse( responseCode = "404", description = "Not found"),
+        ]
+    )
     fun getReleases( @Parameter( description = "Number of releases received.", example = "4" ) @RequestParam( required = false ) length: Int? ): ResponseEntity< List< ReleaseDTO > > {
         val releases = if( length != null )
             releaseService.getLatestReleases( length )
@@ -30,6 +40,13 @@ class ReleaseController( @Autowired private val releaseService: ReleaseService )
 
     @Operation( summary = "Get release by ID.")
     @GetMapping("{releaseId}")
+    @ApiResponses(
+        value = [
+            ApiResponse( responseCode = "200", description = "OK"),
+            ApiResponse( responseCode = "400", description = "Bad request"),
+            ApiResponse( responseCode = "404", description = "Not found"),
+        ]
+    )
     fun getReleaseById( @Parameter( description = "ID of release.", example = "4" ) @PathVariable( required = false ) releaseId: Long ): ResponseEntity<ReleaseDTO>{
         val release = releaseService.getRelease( releaseId )
 
@@ -41,6 +58,13 @@ class ReleaseController( @Autowired private val releaseService: ReleaseService )
 
     @Operation( summary = "Create new release." )
     @PostMapping("")
+    @ApiResponses(
+        value = [
+            ApiResponse( responseCode = "200", description = "OK"),
+            ApiResponse( responseCode = "201", description = "Release created"),
+            ApiResponse( responseCode = "400", description = "Bad request"),
+        ]
+    )
     fun saveRelease( @RequestBody request: ReleaseRequestPost ): ResponseEntity<ReleaseDTO>{
         val response = releaseService.createRelease( request )
 

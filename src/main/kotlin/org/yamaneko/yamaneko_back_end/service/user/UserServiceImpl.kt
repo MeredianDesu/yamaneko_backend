@@ -39,7 +39,11 @@ class UserServiceImpl: UserService {
     }
 
     override fun registerUser( request: UserRegistrationRequest ): ResponseEntity<String> {
-        validateUserRequest( request )
+        val response = validateUserRequest( request )
+        if( response.statusCode == HttpStatus.UNPROCESSABLE_ENTITY )
+            return ResponseEntity.status( HttpStatus.UNPROCESSABLE_ENTITY ).body( "Password doesn't match" )
+        if( response.statusCode == HttpStatus.CONFLICT )
+            return ResponseEntity.status( HttpStatus.CONFLICT ).body( "A user with this email address is already registered" )
 
         val date = dateFormatter.dateToString( Date() )
 
@@ -68,10 +72,10 @@ class UserServiceImpl: UserService {
         val userWithEmail = userRepository.findByEmail( request.email )
 
         if( request.password != request.repeatedPassword )
-            return ResponseEntity.status( HttpStatus.UNPROCESSABLE_ENTITY ).body( "Пароли не совпадают" )
+            return ResponseEntity.status( HttpStatus.UNPROCESSABLE_ENTITY ).body( "Password doesn't match" )
         if( userWithEmail != null )
-            return ResponseEntity.status( HttpStatus.CONFLICT ).body( "Пользователь с такой почтой уже зарегистрирован" )
+            return ResponseEntity.status( HttpStatus.CONFLICT ).body( "A user with this email address is already registered" )
 
-        return ResponseEntity.status( HttpStatus.CONTINUE ).body( "Проверка пройдена успешно" )
+        return ResponseEntity.status( HttpStatus.CONTINUE ).body( "Check passed successfully" )
     }
 }

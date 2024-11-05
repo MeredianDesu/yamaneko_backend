@@ -23,6 +23,6 @@ class UserTokens {
     @Column( name = "expires_at" )
     internal var expiresAt: String = ""
 
-    @Column( name = "is_revorked", columnDefinition = "BOOLEAN default false" )
+    @Column( name = "is_revoked", columnDefinition = "BOOLEAN default false" )
     internal var isRevoked: Boolean = false
 }

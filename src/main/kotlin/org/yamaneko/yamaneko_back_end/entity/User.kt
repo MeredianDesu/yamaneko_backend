@@ -21,7 +21,7 @@ open class User{
 
     @Column( name = "roles" )
     @Convert( converter = StringSetConverter::class )
-    internal var roles: MutableSet<String> = mutableSetOf()
+    internal var roles: MutableSet<String> = mutableSetOf("USER")
 
     @Column( name = "avatar" )
     internal var avatar: String = ""
