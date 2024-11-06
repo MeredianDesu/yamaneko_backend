@@ -16,12 +16,12 @@ open class User{
     @Column( name = "password" )
     internal var password: String = ""
 
-    @Column( name = "email" )
+    @Column( name = "email", unique = true )
     internal var email: String = ""
 
     @Column( name = "roles" )
     @Convert( converter = StringSetConverter::class )
-    internal var roles: MutableSet<String> = mutableSetOf()
+    internal var roles: MutableSet<String> = mutableSetOf("USER")
 
     @Column( name = "avatar" )
     internal var avatar: String = ""

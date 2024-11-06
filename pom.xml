@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.4</version>
+        <version>3.3.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>org.yamaneko</groupId>
@@ -88,6 +88,23 @@
             <artifactId>lombok</artifactId>
             <scope>annotationProcessor</scope>
         </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.12.6</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.12.6</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.12.6</version>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>
@@ -109,7 +126,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-devtools</artifactId>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
 
@@ -159,6 +175,22 @@
                         <version>${kotlin.version}</version>
                     </dependency>
                 </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.8.1</version>
+                <executions>
+                    <execution>
+                        <id>update-dependencies</id>
+                        <goals>
+                            <goal>versions</goal>
+                        </goals>
+                        <configuration>
+                            <generateDependencyUpdatesReport>true</generateDependencyUpdatesReport>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
