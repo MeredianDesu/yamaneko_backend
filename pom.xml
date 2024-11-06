@@ -176,22 +176,22 @@
                     </dependency>
                 </dependencies>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.8.1</version>
-                <executions>
-                    <execution>
-                        <id>update-dependencies</id>
-                        <goals>
-                            <goal>versions</goal>
-                        </goals>
-                        <configuration>
-                            <generateDependencyUpdatesReport>true</generateDependencyUpdatesReport>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-dependency-plugin</artifactId>-->
+<!--                <version>3.8.1</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>update-dependencies</id>-->
+<!--                        <goals>-->
+<!--                            <goal>versions</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <generateDependencyUpdatesReport>true</generateDependencyUpdatesReport>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
         </plugins>
     </build>
 
