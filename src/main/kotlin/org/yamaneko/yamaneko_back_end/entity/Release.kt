@@ -18,10 +18,10 @@ open class Release{
     @Column( name = "translated_name" )
     internal var translatedName: String = ""
 
-    @Column( name = "poster_image_url", columnDefinition = "varchar(255) default '/var/yamaneko_files/mascot.jfif'", nullable = true )
+    @Column( name = "poster_image_url", columnDefinition = "varchar(255) default 'files/mascot.jfif'", nullable = true )
     internal var posterImageUrl: String? = null
 
-    @Column( name = "preview_video_url", columnDefinition = "varchar(255) default '/var/yamaneko_files/preview.mp4'", nullable = true )
+    @Column( name = "preview_video_url", columnDefinition = "varchar(255) default 'files/preview.mp4'", nullable = true )
     internal var previewVideoUrl: String? = null
 
     @Column( name = "video_url", nullable = true )

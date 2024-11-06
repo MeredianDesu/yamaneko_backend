@@ -43,6 +43,9 @@ jobs:
       - name: Update key store alias
         run: sed -i 's|<key_store_alias>|${{ secrets.KEY_STORE_ALIAS }}|' src/main/resources/application-prod.properties
 
+      - name: Update jwt private key
+        run: sed -i 's|<jwt_private_key>|${{ secrets.JWT_PRIVATE_KEY }}|' src/main/resources/application-prod.properties
+
       # Build Maven project
       - name: Build with Maven
         run: mvn clean package -Dmaven.test.skip=true -Dspring.profiles.active=prod
