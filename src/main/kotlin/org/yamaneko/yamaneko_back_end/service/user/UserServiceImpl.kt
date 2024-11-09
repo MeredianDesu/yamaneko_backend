@@ -48,6 +48,7 @@ class UserServiceImpl: UserService {
     // User registration
     override fun registerUser( request: UserRegistrationRequest ): ResponseEntity<String> {
         val response = validateUserRequest( request )
+
         if( response.statusCode == HttpStatus.UNPROCESSABLE_ENTITY )
             return ResponseEntity.status( HttpStatus.UNPROCESSABLE_ENTITY ).body( "Password doesn't match" )
         if( response.statusCode == HttpStatus.CONFLICT )
@@ -86,6 +87,7 @@ class UserServiceImpl: UserService {
 
     @Transactional
     override fun authUser( request: UserAuthRequest ): ResponseEntity<String> {
+        // Get user from DB else NULL
         val user = userRepository.findByEmail( request.email )
             ?: return ResponseEntity.status( HttpStatus.NOT_FOUND ).body( "User not found" )
 
@@ -93,19 +95,17 @@ class UserServiceImpl: UserService {
             val refreshToken = refreshTokensRepository.findByUser( user.id )?.token
             // If refresh token not expired
             if ( refreshToken != null ) {
-//                userTokensRepository.disableToken( userTokensRepository.findByToken( user.id )?.tokenHash )
                 val newAccessToken = generateAndSaveAccessToken( user )
 
                 return ResponseEntity.status( HttpStatus.OK ).body( "$newAccessToken|$refreshToken")
             }
-            // If refresh token expired
+            // If refresh token expired or not exist
             else {
-//                userTokensRepository.disableToken( userTokensRepository.findByToken( user )?.tokenHash )
-//                refreshTokensRepository.disableToken( refreshTokensRepository.findByUser( user.id )?.token )
-                val newAccessToken = generateAndSaveAccessToken( user )
-                val newRefreshToken = generateAndSaveRefreshToken( user )
+                generateAndSaveAccessToken( user )
+                generateAndSaveRefreshToken( user )
 
-                return ResponseEntity.status( HttpStatus.OK ).body( "$newAccessToken|$newRefreshToken")
+                // Return 401 with new tokens creations
+                return ResponseEntity.status( HttpStatus.UNAUTHORIZED ).body( "Unauthorized" )
             }
         }
         else

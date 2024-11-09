@@ -27,7 +27,7 @@ class GenreController(
         return if( genresList.isEmpty() )
             ResponseEntity.status( HttpStatus.NO_CONTENT ).build()
         else
-            ResponseEntity.ok( genresList )
+            ResponseEntity.status( HttpStatus.OK ).body( genresList )
     }
 
     @Operation( summary = "Create a new genre." )
@@ -42,6 +42,6 @@ class GenreController(
             name = savedGenre.name
         )
 
-        return ResponseEntity.ok( response )
+        return ResponseEntity.status( HttpStatus.CREATED ).body( response )
     }
 }
