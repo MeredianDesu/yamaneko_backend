@@ -27,6 +27,6 @@ class TeamController(
     fun addTeamMember( @RequestBody request: TeamRequestDTO ): ResponseEntity<TeamDTO>{
         val response = teamService.createTeamMember( request )
 
-        return ResponseEntity.status( HttpStatus.CREATED).body( response )
+        return ResponseEntity.status( HttpStatus.CREATED ).body( response )
     }
 }

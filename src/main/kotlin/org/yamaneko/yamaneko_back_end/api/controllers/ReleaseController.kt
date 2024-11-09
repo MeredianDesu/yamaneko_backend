@@ -2,6 +2,8 @@ package org.yamaneko.yamaneko_back_end.api.controllers
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,10 +22,20 @@ class ReleaseController( @Autowired private val releaseService: ReleaseService )
     @GetMapping("")
     @ApiResponses(
         value = [
-            ApiResponse( responseCode = "200", description = "OK"),
-            ApiResponse( responseCode = "203", description = "No content"),
-            ApiResponse( responseCode = "400", description = "Bad request"),
-            ApiResponse( responseCode = "404", description = "Not found"),
+            ApiResponse(
+                responseCode = "200",
+                description = "OK",
+                content = [ Content( mediaType = "application/json", schema = Schema( implementation = ReleaseDTO::class ) ) ]
+            ),
+            ApiResponse( responseCode = "203",
+                description = "No content",
+                content = [ Content( mediaType = "text/plain", schema = Schema( type = "string", example = "No releases added yet" ) ) ]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Bad request",
+                content = [ Content( mediaType = "text/plain", schema = Schema( type = "string", example = "Bad request" ) ) ]
+            ),
         ]
     )
     fun getReleases( @Parameter( description = "Number of releases received.", example = "4" ) @RequestParam( required = false ) length: Int? ): ResponseEntity< List< ReleaseDTO > > {
@@ -42,9 +54,21 @@ class ReleaseController( @Autowired private val releaseService: ReleaseService )
     @GetMapping("{releaseId}")
     @ApiResponses(
         value = [
-            ApiResponse( responseCode = "200", description = "OK"),
-            ApiResponse( responseCode = "400", description = "Bad request"),
-            ApiResponse( responseCode = "404", description = "Not found"),
+            ApiResponse(
+                responseCode = "200",
+                description = "OK",
+                content = [ Content( mediaType = "application/json", schema = Schema( implementation = ReleaseDTO::class ) ) ]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Bad request",
+                content = [ Content( mediaType = "text/plain", schema = Schema( type = "string", example = "Bad request" ) ) ]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Not found",
+                content = [ Content( mediaType = "text/plain", schema = Schema( type = "string", example = "Release not found" ) ) ]
+            ),
         ]
     )
     fun getReleaseById( @Parameter( description = "ID of release.", example = "4" ) @PathVariable( required = false ) releaseId: Long ): ResponseEntity<ReleaseDTO>{
@@ -60,9 +84,16 @@ class ReleaseController( @Autowired private val releaseService: ReleaseService )
     @PostMapping("")
     @ApiResponses(
         value = [
-            ApiResponse( responseCode = "200", description = "OK"),
-            ApiResponse( responseCode = "201", description = "Release created"),
-            ApiResponse( responseCode = "400", description = "Bad request"),
+            ApiResponse(
+                responseCode = "201",
+                description = "Release created",
+                content = [ Content( mediaType = "application/json", schema = Schema( implementation = ReleaseDTO::class ) ) ]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Bad request",
+                content = [ Content( mediaType = "text/plain", schema = Schema( type = "string", example = "Bad request" ) ) ]
+            ),
         ]
     )
     fun saveRelease( @RequestBody request: ReleaseRequestPost ): ResponseEntity<ReleaseDTO>{

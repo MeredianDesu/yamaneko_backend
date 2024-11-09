@@ -1,12 +1,15 @@
 package org.yamaneko.yamaneko_back_end.api.controllers
 
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import org.yamaneko.yamaneko_back_end.dto.user.UserAuthRequest
 import org.yamaneko.yamaneko_back_end.dto.user.UserAuthResponse
@@ -18,6 +21,7 @@ import org.yamaneko.yamaneko_back_end.service.user.UserService
 
 @RestController
 @RequestMapping( "/api/v1/users" )
+@Validated
 class UserController(
     @Autowired
     private var userService: UserService,
@@ -30,9 +34,21 @@ class UserController(
     @GetMapping("")
     @ApiResponses(
         value = [
-            ApiResponse( responseCode = "200", description = "OK"),
-            ApiResponse( responseCode = "204", description = "No content"),
-            ApiResponse( responseCode = "400", description = "Bad request"),
+            ApiResponse(
+                responseCode = "200",
+                description = "OK",
+                content = [ Content( mediaType = "application/json", schema = Schema( implementation = UserDTO::class ) ) ],
+            ),
+            ApiResponse(
+                responseCode = "204",
+                description = "No content",
+                content = [ Content( mediaType = "text/plain", schema = Schema( type = "string", example = "User not found" ) ) ]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Bad request",
+                content = [ Content( mediaType = "text/plain", schema = Schema( type = "string", example = "Bad request" ) ) ]
+            ),
         ]
     )
     fun getUsers(): List<UserDTO> {
@@ -44,10 +60,21 @@ class UserController(
     @PostMapping("/register")
     @ApiResponses(
         value = [
-            ApiResponse( responseCode = "201", description = "User created"),
-            ApiResponse( responseCode = "400", description = "Bad request"),
-            ApiResponse( responseCode = "409", description = "User already exists"),
-            ApiResponse( responseCode = "422", description = "Password mismatch"),
+            ApiResponse(
+                responseCode = "201",
+                description = "User created",
+                content = [ Content( mediaType = "application/json", schema = Schema( implementation = UserAuthResponse::class ) ) ]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Bad request",
+                content = [ Content( mediaType = "text/plain", schema = Schema( type = "string", example = "Bad request" ) ) ]
+            ),
+            ApiResponse(
+                responseCode = "409",
+                description = "User already exists",
+                content = [ Content( mediaType = "text/plain", schema = Schema( type = "string", example = "User already exists" ) ) ]
+            ),
         ]
     )
     fun createUser( @Valid @RequestBody request: UserRegistrationRequest ): ResponseEntity<Any>{
@@ -70,14 +97,32 @@ class UserController(
 
     @Operation( summary = "Auth user." )
     @PostMapping( "/login" )
-//    @ApiResponses()
-    fun authUser( @RequestBody request: UserAuthRequest ): ResponseEntity<Any>{
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Authorized",
+                content = [ Content( mediaType = "application/json", schema = Schema( implementation = UserAuthResponse::class ) ) ]
+            ),
+            ApiResponse(
+                responseCode = "401",
+                description = "Unauthorized",
+                content = [ Content( mediaType = "text/plain", schema = Schema( type = "string", example = "Unauthorized" ) ) ]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "User not found",
+                content = [ Content( mediaType = "text/plain", schema = Schema( type = "string", example = "User not found" ) ) ]
+            )
+        ]
+    )
+    fun authUser( @Schema( type = "" ) @Valid @RequestBody request: UserAuthRequest ): ResponseEntity<Any>{
         val status = userService.authUser( request )
 
         if( status.statusCode == HttpStatus.NOT_FOUND )
-            return ResponseEntity.status( HttpStatus.NOT_FOUND ).body( "User not found" )
+            return ResponseEntity.status( HttpStatus.NOT_FOUND ).body( status.body )
         if( status.statusCode == HttpStatus.UNAUTHORIZED )
-            return ResponseEntity.status( HttpStatus.UNAUTHORIZED ).body( "Invalid credentials" )
+            return ResponseEntity.status( HttpStatus.UNAUTHORIZED ).body( status.body )
 
         val tokens = status.body?.split('|')
 

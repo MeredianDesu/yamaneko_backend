@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -17,7 +18,6 @@ import org.yamaneko.yamaneko_back_end.entity.Banner
 import org.yamaneko.yamaneko_back_end.mappers.BannerMapper
 import org.yamaneko.yamaneko_back_end.repository.BannerRepository
 import org.yamaneko.yamaneko_back_end.service.banner.BannerService
-import java.net.http.HttpResponse
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -32,12 +32,12 @@ class BannerController(
 
     @Operation( summary = "Get banners by visibility." )
     @GetMapping("")
-    fun getBanners( @Parameter( description = "Fetch advertisements by visibility.", example = "true" ) @RequestParam( required = false ) visible: Boolean? ): List<BannerDTO> {
+    fun getBanners( @Parameter( description = "Fetch advertisements by visibility.", example = "true" ) @RequestParam( required = false ) visible: Boolean? ): ResponseEntity< List<BannerDTO> > {
 
         return when( visible ){
-            true -> bannerService.getAvailableAdvertisements()
-            false -> bannerService.getHiddenAdvertisements()
-            else -> bannerService.getAllAdvertisements()
+            true -> ResponseEntity.status( HttpStatus.OK ).body( bannerService.getAvailableAdvertisements() )
+            false -> ResponseEntity.status( HttpStatus.NOT_FOUND ).body( bannerService.getHiddenAdvertisements() )
+            else -> ResponseEntity.status( HttpStatus.OK ).body( bannerService.getAllAdvertisements() )
         }
     }
 
@@ -63,6 +63,6 @@ class BannerController(
             createdAt = savedBanner.createdAt,
         )
 
-        return ResponseEntity.ok( response )
+        return ResponseEntity.status( HttpStatus.CREATED ).body( response )
     }
 }

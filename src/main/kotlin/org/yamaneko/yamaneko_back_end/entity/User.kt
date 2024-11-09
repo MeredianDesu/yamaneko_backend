@@ -29,7 +29,7 @@ open class User{
     @Column( name = "created_at" )
     internal var createdAt: String = ""
 
-    //Ссылки
+    // Links
     @OneToOne( mappedBy = "user", cascade = [CascadeType.ALL] )
     internal var team: Team? = null
 
