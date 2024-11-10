@@ -11,6 +11,7 @@ class YamanekoBackEndApplication: SpringBootServletInitializer() {}
 fun main(args: Array<String>) {
     runApplication<YamanekoBackEndApplication>(*args)
 }
+
 @Override
 fun configure( application: SpringApplicationBuilder ): SpringApplicationBuilder {
     return application.sources( YamanekoBackEndApplication::class.java )

@@ -24,18 +24,23 @@ class JwtUtil {
     fun generateToken( user: User ): String{
         val claims: Map<String, Any> = mapOf(
             "id" to user.id,
-//            "roles" to user.roles
+            "roles" to user.roles
         )
 
         val key = Keys.hmacShaKeyFor( secretKey.toByteArray() )
 
         return Jwts.builder()
             .claims( claims )
-//            .subject( user.username )
             .issuedAt( Date() )
             .expiration( Date(System.currentTimeMillis() + expirationMs ) )
             .signWith( key )
             .compact()
+    }
+
+    fun extractUserId( token: String ): String? {
+        val claims = extractClaims( token )
+
+        return claims?.get("id", String::class.java )
     }
 
     fun extractUsername( token: String ): String?{
@@ -72,6 +77,14 @@ class JwtUtil {
             println( "Cannot parse token" )
             null
         }
+    }
+
+    fun isTokenExpired( token: String ): Boolean {
+        return extractExpiration( token )?.before( Date() )!!
+    }
+
+    fun validateToken( token: String, username: String ): Boolean {
+        return ( username == extractUsername( token ) && !isTokenExpired( token ) )
     }
 
     fun hashToken( token: String ): String{

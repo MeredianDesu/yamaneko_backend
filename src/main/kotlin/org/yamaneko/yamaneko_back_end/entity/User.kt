@@ -13,7 +13,7 @@ open class User{
     @Column( name = "username" )
     internal var username: String = ""
 
-    @Column( name = "password" )
+    @Column( name = "password", columnDefinition = "varchar(65)" )
     internal var password: String = ""
 
     @Column( name = "email", unique = true )
