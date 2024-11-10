@@ -17,7 +17,7 @@ import org.yamaneko.yamaneko_back_end.config.filter.JwtAuthenticationFilter
 @EnableWebSecurity
 class SecurityConfig {
     @Bean
-    fun securityFilterChain( http: HttpSecurity ): SecurityFilterChain {
+    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
             .csrf().disable()
             .authorizeHttpRequests()
