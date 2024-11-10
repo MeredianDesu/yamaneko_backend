@@ -17,6 +17,7 @@ import org.yamaneko.yamaneko_back_end.repository.UserRepository
 import org.yamaneko.yamaneko_back_end.repository.UserTokensRepository
 import org.yamaneko.yamaneko_back_end.utils.DateFormatter
 import org.yamaneko.yamaneko_back_end.utils.JwtUtil
+import org.yamaneko.yamaneko_back_end.utils.PasswordSecurity
 import java.util.*
 
 @Service
@@ -36,6 +37,9 @@ class UserServiceImpl: UserService {
 
     @Autowired
     lateinit var dateFormatter: DateFormatter
+
+    @Autowired
+    lateinit var passwordSecurity: PasswordSecurity
 
     private var userMapper = UserMapper()
 
@@ -58,7 +62,7 @@ class UserServiceImpl: UserService {
 
         val user = User()
         user.username = request.username
-        user.password = request.password
+        user.password = passwordSecurity.hashPassword( request.password )
         user.email = request.email
         user.createdAt = date
 
@@ -91,7 +95,7 @@ class UserServiceImpl: UserService {
         val user = userRepository.findByEmail( request.email )
             ?: return ResponseEntity.status( HttpStatus.NOT_FOUND ).body( "User not found" )
 
-        if( user.email == request.email && user.password == request.password ) {
+        if( user.email == request.email && passwordSecurity.verifyPassword( request.password, user.password ) ) {
             val refreshToken = refreshTokensRepository.findByUser( user.id )?.token
             // If refresh token not expired
             if ( refreshToken != null ) {

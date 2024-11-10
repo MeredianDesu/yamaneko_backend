@@ -1,7 +1,11 @@
 package org.yamaneko.yamaneko_back_end.config
 
+import io.swagger.v3.oas.models.Components
+import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.info.Info
 import io.swagger.v3.oas.models.info.License
+import io.swagger.v3.oas.models.security.SecurityRequirement
+import io.swagger.v3.oas.models.security.SecurityScheme
 import org.springdoc.core.models.GroupedOpenApi
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -17,8 +21,8 @@ class SpringDocConfig {
     }
 
     @Bean
-    fun apiInfo(): io.swagger.v3.oas.models.OpenAPI {
-        return io.swagger.v3.oas.models.OpenAPI()
+    fun openApi(): OpenAPI {
+        return OpenAPI()
             .info(
                 Info()
                     .title("Yamaneko API")
@@ -29,6 +33,15 @@ class SpringDocConfig {
                             .name("MIT License")
                             .url("https://github.com/MeredianDesu/yamaneko_backend?tab=MIT-1-ov-file")
                     )
+            )
+            .components(
+                Components().addSecuritySchemes(
+                    "basicAuth",
+                    SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("basic")
+                )
+            )
+            .addSecurityItem(
+                SecurityRequirement().addList("basicAuth")
             )
     }
 }

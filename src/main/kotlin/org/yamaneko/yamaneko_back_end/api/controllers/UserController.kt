@@ -18,6 +18,7 @@ import org.yamaneko.yamaneko_back_end.dto.user.UserRegistrationRequest
 import org.yamaneko.yamaneko_back_end.mappers.UserMapper
 import org.yamaneko.yamaneko_back_end.repository.UserRepository
 import org.yamaneko.yamaneko_back_end.service.user.UserService
+import org.yamaneko.yamaneko_back_end.utils.JwtUtil
 
 @RestController
 @RequestMapping( "/api/v1/users" )
@@ -29,6 +30,8 @@ class UserController(
 ) {
 
     private val userMapper = UserMapper()
+
+    private val jwtUtil: JwtUtil = JwtUtil()
 
     @Operation( summary = "Get all users." )
     @GetMapping("")
@@ -54,6 +57,22 @@ class UserController(
     fun getUsers(): List<UserDTO> {
 
         return userService.getAllUsers()
+    }
+
+    @Operation( summary = "Get user by JWT." )
+    @GetMapping( "/user" )
+    fun getUserByJWT( @RequestHeader( "Authorization" ) authHeader: String, @RequestHeader( "X-Refresh-Token" ) refreshToken: String ): ResponseEntity<UserDTO> {
+        val accessToken = authHeader.removePrefix("Bearer ").trim()
+        val userId = jwtUtil.extractUserId( accessToken ) ?: return ResponseEntity.status( HttpStatus.UNAUTHORIZED ).build()
+        val user = userRepository.findById( userId.toLong() ).orElse( null ) ?: return ResponseEntity.status( HttpStatus.NOT_FOUND ).build()
+
+        if ( jwtUtil.isTokenExpired( accessToken ) ) {
+            // Здесь можно добавить логику, если нужно обновить access токен с помощью refresh токена
+            println( "Access token expired. X-Refresh-Token: $refreshToken" )
+            // Добавьте свою логику для работы с refresh-токеном
+        }
+
+        return ResponseEntity.status( HttpStatus.OK ).body( userMapper.toDTO( user ) )
     }
 
     @Operation( summary = "Create a new user." )
@@ -127,8 +146,8 @@ class UserController(
         val tokens = status.body?.split('|')
 
         val response = UserAuthResponse(
-            accessToken = tokens?.get(0),
-            refreshToken = tokens?.get(1)
+            accessToken = tokens?.get( 0 ),
+            refreshToken = tokens?.get( 1 )
         )
 
         return ResponseEntity.status( HttpStatus.OK ).body( response )
