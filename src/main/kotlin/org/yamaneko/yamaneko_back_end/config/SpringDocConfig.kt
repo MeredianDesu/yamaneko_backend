@@ -36,12 +36,15 @@ class SpringDocConfig {
             )
             .components(
                 Components().addSecuritySchemes(
-                    "basicAuth",
-                    SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("basic")
+                    "bearerAuth",
+                    SecurityScheme()
+                        .type(SecurityScheme.Type.HTTP)
+                        .scheme("bearer")
+                        .bearerFormat("JWT") // Specifies that it's a JWT token
                 )
             )
             .addSecurityItem(
-                SecurityRequirement().addList("basicAuth")
+                SecurityRequirement().addList("bearerAuth")
             )
     }
 }

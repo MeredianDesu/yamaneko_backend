@@ -1,6 +1,7 @@
 package org.yamaneko.yamaneko_back_end.api.controllers
 
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -16,7 +17,9 @@ import org.yamaneko.yamaneko_back_end.dto.user.UserAuthResponse
 import org.yamaneko.yamaneko_back_end.dto.user.UserDTO
 import org.yamaneko.yamaneko_back_end.dto.user.UserRegistrationRequest
 import org.yamaneko.yamaneko_back_end.mappers.UserMapper
+import org.yamaneko.yamaneko_back_end.repository.UserRefreshTokensRepository
 import org.yamaneko.yamaneko_back_end.repository.UserRepository
+import org.yamaneko.yamaneko_back_end.repository.UserTokensRepository
 import org.yamaneko.yamaneko_back_end.service.user.UserService
 import org.yamaneko.yamaneko_back_end.utils.JwtUtil
 
@@ -27,6 +30,9 @@ class UserController(
     @Autowired
     private var userService: UserService,
     private val userRepository: UserRepository,
+    private val refreshTokensRepository: UserRefreshTokensRepository,
+    private val userTokensRepository: UserTokensRepository,
+    private val userRefreshTokensRepository: UserRefreshTokensRepository
 ) {
 
     private val userMapper = UserMapper()
@@ -61,16 +67,13 @@ class UserController(
 
     @Operation( summary = "Get user by JWT." )
     @GetMapping( "/user" )
-    fun getUserByJWT( @RequestHeader( "Authorization" ) authHeader: String, @RequestHeader( "X-Refresh-Token" ) refreshToken: String ): ResponseEntity<UserDTO> {
+    fun getUserByJWT(
+        @RequestAttribute( "AuthorizationToken" ) @Parameter( description = "accessToken") authHeader: String,
+        @RequestHeader( "X-Refresh-Token" ) @Parameter( description = "Refresh token" ) refreshToken: String?
+    ): ResponseEntity<UserDTO> {
         val accessToken = authHeader.removePrefix("Bearer ").trim()
         val userId = jwtUtil.extractUserId( accessToken ) ?: return ResponseEntity.status( HttpStatus.UNAUTHORIZED ).build()
         val user = userRepository.findById( userId.toLong() ).orElse( null ) ?: return ResponseEntity.status( HttpStatus.NOT_FOUND ).build()
-
-        if ( jwtUtil.isTokenExpired( accessToken ) ) {
-            // Здесь можно добавить логику, если нужно обновить access токен с помощью refresh токена
-            println( "Access token expired. X-Refresh-Token: $refreshToken" )
-            // Добавьте свою логику для работы с refresh-токеном
-        }
 
         return ResponseEntity.status( HttpStatus.OK ).body( userMapper.toDTO( user ) )
     }
@@ -112,6 +115,22 @@ class UserController(
         )
 
         return ResponseEntity.status( HttpStatus.CREATED ).body( response )
+    }
+
+    @Operation( summary = "Refresh access token" )
+    @PostMapping( "/refresh" )
+    fun refreshToken( @RequestAttribute( "AuthorizationToken" ) @Parameter( description = "JWT token." ) authHeader: String ): ResponseEntity<Any>{
+        var accessToken = authHeader.removePrefix("Bearer ").trim()
+        val userIdByAccessToken = userTokensRepository.findByToken( accessToken )?.user?.id ?: return ResponseEntity.status( HttpStatus.NOT_FOUND ).build()
+        if( userRefreshTokensRepository.findByUser( userIdByAccessToken )?.token != null ){
+            val user = userRepository.findById( userIdByAccessToken ).get()
+            accessToken = userService.generateAndSaveAccessToken( user )
+        }
+        else{
+            return ResponseEntity.status( HttpStatus.UNAUTHORIZED ).build()
+        }
+
+        return ResponseEntity.status( HttpStatus.OK ).body( accessToken )
     }
 
     @Operation( summary = "Auth user." )

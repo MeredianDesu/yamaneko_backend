@@ -40,7 +40,7 @@ class JwtUtil {
     fun extractUserId( token: String ): String? {
         val claims = extractClaims( token )
 
-        return claims?.get("id", String::class.java )
+        return claims?.get("id", Integer::class.java )?.toString()
     }
 
     fun extractUsername( token: String ): String?{
@@ -74,17 +74,19 @@ class JwtUtil {
                 .parseSignedClaims( token )
                 .payload
         } catch ( e: Exception ){
-            println( "Cannot parse token" )
-            null
+            println( "Cannot parse token: $e" )
+            return null
         }
     }
 
     fun isTokenExpired( token: String ): Boolean {
+
         return extractExpiration( token )?.before( Date() )!!
     }
 
-    fun validateToken( token: String, username: String ): Boolean {
-        return ( username == extractUsername( token ) && !isTokenExpired( token ) )
+    fun validateToken( token: String, id: String ): Boolean {
+
+        return id == extractUserId( token )/* && !isTokenExpired( token )*/
     }
 
     fun hashToken( token: String ): String{

@@ -8,10 +8,10 @@ import org.yamaneko.yamaneko_back_end.entity.UserToken
 
 interface UserTokensRepository: JpaRepository<UserToken, Long>{
 
-    @Query("FROM UserToken a WHERE a.tokenHash = :token AND TO_TIMESTAMP( a.expiresAt, 'DD/MM/YYYY HH24:MI:SS' ) > CURRENT_TIMESTAMP")
-    fun findByToken(@Param( "token" ) token: String ): UserToken?
+    @Query("FROM UserToken a WHERE a.jwtToken = :jwtToken")
+    fun findByToken(@Param( "jwtToken" ) jwtToken: String ): UserToken?
 
     @Modifying
-    @Query("UPDATE UserToken a SET a.isRevoked = true WHERE a.tokenHash = :tokenHash")
-    fun disableToken( @Param( "tokenHash" ) tokenHash: String? )
+    @Query("UPDATE UserToken a SET a.isRevoked = true WHERE a.jwtToken = :jwtToken")
+    fun disableToken( @Param( "jwtToken" ) jwtToken: String? )
 }

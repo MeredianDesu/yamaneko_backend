@@ -73,7 +73,7 @@ class UserServiceImpl: UserService {
 
         val userToken = UserToken()
         userToken.user = user
-        userToken.tokenHash = jwtUtil.hashToken( token )
+        userToken.jwtToken = /*jwtUtil.hashToken( token )*/token
         userToken.createdAt = dateFormatter.dateToString( jwtUtil.extractCreation( token )!! )
         userToken.expiresAt = dateFormatter.dateToString( jwtUtil.extractExpiration( token )!! )
 
@@ -116,11 +116,11 @@ class UserServiceImpl: UserService {
             return ResponseEntity.status( HttpStatus.UNAUTHORIZED ).body( "Invalid credentials" )
     }
 
-    private fun generateAndSaveAccessToken( user: User ): String{
+    override fun generateAndSaveAccessToken( user: User ): String{
         val newAccessToken = jwtUtil.generateToken(user)
         val userToken = UserToken().apply {
             this.user = user
-            this.tokenHash = jwtUtil.hashToken(newAccessToken)
+            this.jwtToken = newAccessToken
             this.createdAt = dateFormatter.dateToString(jwtUtil.extractCreation(newAccessToken)!!)
             this.expiresAt = dateFormatter.dateToString(jwtUtil.extractExpiration(newAccessToken)!!)
         }
@@ -133,7 +133,7 @@ class UserServiceImpl: UserService {
         val newRefreshToken = jwtUtil.generateRefreshToken()
         val refreshTokenInstance = RefreshToken().apply {
             this.user = user
-            this.token = jwtUtil.hashToken(newRefreshToken["token"]!!)
+            this.token = newRefreshToken["token"]!!
             this.createdAt = newRefreshToken["issuedAt"]!!
             this.expiresAt = newRefreshToken["expirationDate"]!!
         }
