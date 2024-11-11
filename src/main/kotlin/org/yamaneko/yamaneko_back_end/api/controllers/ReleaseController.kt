@@ -101,4 +101,34 @@ class ReleaseController( @Autowired private val releaseService: ReleaseService )
 
         return ResponseEntity.status( HttpStatus.CREATED ).body( response )
     }
+
+    @Operation( summary = "Delete release" )
+    @DeleteMapping("{releaseId}")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Release deleted",
+                content = [ Content( mediaType = "text/plain", schema = Schema( type = "string", example = "Release deleted" ) ) ]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Bad request",
+                content = [ Content( mediaType = "text/plain", schema = Schema( type = "string", example = "Bad request" ) ) ]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Not found",
+                content = [ Content( mediaType = "text/plain", schema = Schema( type = "string", example = "Release not found" ) ) ]
+            )
+        ]
+    )
+    fun removeRelease( @Parameter( description = "Release ID" ) @PathVariable( required = true ) releaseId: Long ): ResponseEntity<String>{
+        val status = releaseService.removeRelease( releaseId )
+
+        return if( status.statusCode == HttpStatus.OK )
+            ResponseEntity.status( HttpStatus.OK ).body( "Release deleted." )
+        else
+            ResponseEntity.status( HttpStatus.NOT_FOUND ).body( "Release not found." )
+    }
 }

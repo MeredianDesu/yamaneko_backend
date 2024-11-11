@@ -2,6 +2,9 @@ package org.yamaneko.yamaneko_back_end.service.release
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.yamaneko.yamaneko_back_end.dto.RolesDTO
 import org.yamaneko.yamaneko_back_end.dto.release.ReleaseDTO
@@ -90,5 +93,17 @@ class ReleaseServiceImpl: ReleaseService {
         val savedRelease = releaseRepository.save( release )
 
         return releaseMapper.toDTO( savedRelease )
+    }
+
+    override fun removeRelease( id: Long ): ResponseEntity<String> {
+        val release = releaseRepository.findReleaseById( id )
+
+        return if ( release != null ) {
+            releaseRepository.deleteById(release.id)
+            ResponseEntity.status( HttpStatus.OK ).body( "Release deleted" )
+        }
+        else
+            return ResponseEntity.status( HttpStatus.NOT_FOUND ).body( "Release not found" )
+
     }
 }
