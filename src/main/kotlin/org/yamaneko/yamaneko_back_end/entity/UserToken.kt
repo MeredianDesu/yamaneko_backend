@@ -14,8 +14,8 @@ class UserToken {
     @JoinColumn( name = "user_id", nullable = false )
     internal var user: User? = null
 
-    @Column( name = "token_hash", columnDefinition = "varchar(512)" ,nullable = false )
-    internal var tokenHash: String = ""
+    @Column( name = "jwt_token", columnDefinition = "varchar(512)" ,nullable = false )
+    internal var jwtToken: String = ""
 
     @Column( name = "created_at" )
     internal var createdAt: String = ""
