@@ -30,6 +30,7 @@ class SecurityConfig {
             .csrf().disable()
             .authorizeHttpRequests()
 //                .requestMatchers("/api/v1/users/register", "/api/v1/users/login", "/api/v1/releases", "/api/v1/users/refresh").permitAll()
+            .requestMatchers("/swagger-ui/index.html").hasRole("DEV")
                 .requestMatchers("/**").permitAll()
                 .anyRequest().authenticated()
             .and()
