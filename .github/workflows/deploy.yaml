@@ -49,8 +49,8 @@ jobs:
       - name: Update master username
         run: sed -i 's|<master_username>|${{ secrets.MASTER_USERNAME }}|' src/main/resources/application-prod.properties
 
-      - name: Update master_password
-        run: sed -i 's|<jwt_private_key>|${{ secrets.MASTER_PASSWORD }}|' src/main/resources/application-prod.properties
+      - name: Update master password
+        run: sed -i 's|<master_password>|${{ secrets.MASTER_PASSWORD }}|' src/main/resources/application-prod.properties
 
       # Build Maven project
       - name: Build with Maven
