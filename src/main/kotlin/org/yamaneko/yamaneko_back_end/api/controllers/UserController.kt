@@ -72,6 +72,7 @@ class UserController(
         @RequestHeader( "X-Refresh-Token" ) @Parameter( description = "Refresh token" ) refreshToken: String?
     ): ResponseEntity<UserDTO> {
         val accessToken = authHeader.removePrefix("Bearer ").trim()
+        println("/user" + authHeader)
         val userId = jwtUtil.extractUserId( accessToken ) ?: return ResponseEntity.status( HttpStatus.UNAUTHORIZED ).build()
         val user = userRepository.findById( userId.toLong() ).orElse( null ) ?: return ResponseEntity.status( HttpStatus.NOT_FOUND ).build()
 

@@ -17,8 +17,8 @@ class JwtUtil {
     @Autowired
     lateinit var dateFormatter: DateFormatter
 
-    @Value("\${jwt.secret}")
-    private var secretKey: String = ""
+//    @Value("\${jwt.secret}")
+    private var secretKey: String = "V329bvkSr348NnE4yJsbaT786iRERK6h"
     private val expirationMs: Long = 360_000
 
     fun generateToken( user: User ): String{
