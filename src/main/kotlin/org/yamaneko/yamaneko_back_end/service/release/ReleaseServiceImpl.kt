@@ -3,7 +3,6 @@ package org.yamaneko.yamaneko_back_end.service.release
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
-import org.springframework.http.HttpStatusCode
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.yamaneko.yamaneko_back_end.dto.RolesDTO
@@ -69,9 +68,9 @@ class ReleaseServiceImpl: ReleaseService {
         val release = Release().apply {
             originalName = request.originalName
             translatedName = request.translatedName
-            posterImageUrl = "${filesServerUrl}${request.posterImageUrl}"
-            previewVideoUrl = "${filesServerUrl}${request.previewVideoUrl}"
-            videoUrl = "${filesServerUrl}${request.videoUrl}"
+            posterImageUrl = request.posterImageUrl.takeIf { !it.isNullOrEmpty() } ?: "${filesServerUrl}${request.posterImageUrl}"
+            previewVideoUrl = request.previewVideoUrl.takeIf{ !it.isNullOrEmpty() } ?: "${filesServerUrl}${request.previewVideoUrl}"
+            videoUrl = request.videoUrl.takeIf{ !it.isNullOrEmpty() } ?: "${filesServerUrl}${request.videoUrl}"
             sinopsis = request.sinopsis
             info = request.info
             dubbers = request.dubbers.flatMap { role ->
