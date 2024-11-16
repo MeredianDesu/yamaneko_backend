@@ -81,7 +81,7 @@ class ReleaseController( @Autowired private val releaseService: ReleaseService )
     }
 
     @Operation( summary = "Find release by specified word by name." )
-    @GetMapping("/search/{keyword}")
+    @GetMapping("/search/name/{keyword}")
     @ApiResponses(
         value = [
             ApiResponse(
@@ -96,11 +96,36 @@ class ReleaseController( @Autowired private val releaseService: ReleaseService )
             )
         ]
     )
-    fun findRelease( @Parameter( description = "Enter specified word for search." ) @PathVariable( required = true ) keyword: String ): ResponseEntity<Any>{
+    fun getReleaseByName( @Parameter( description = "Enter specified word for search." ) @PathVariable( required = true ) keyword: String ): ResponseEntity<Any>{
         val response = releaseService.getReleaseByKeyword( keyword )
 
-        return if( response.statusCode == HttpStatus.NOT_FOUND )
+        return if( response?.statusCode == HttpStatus.NOT_FOUND )
             ResponseEntity.status( HttpStatus.NOT_FOUND ).body( "Release not found" )
+        else
+            ResponseEntity.status( HttpStatus.OK ).body( response )
+    }
+
+    @Operation( summary = "Find release by specified word by name." )
+    @GetMapping("/search/genre/{genre}")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Release found",
+                content = [ Content( mediaType = "application/json", schema = Schema( implementation = ReleaseDTO::class ) ) ]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Not found",
+                content = [ Content( mediaType = "text/plain", schema = Schema( type = "string", example = "Release not found" ) ) ]
+            )
+        ]
+    )
+    fun getReleasesByGenre( @Parameter( description = "Enter specified genres for search." ) @PathVariable( required = true ) genre: String ): ResponseEntity<Any>{
+        val response = releaseService.getReleasesByGenre( genre )
+
+        return if( response?.statusCode == HttpStatus.NOT_FOUND )
+            ResponseEntity.status( HttpStatus.NOT_FOUND ).body( "Releases not found." )
         else
             ResponseEntity.status( HttpStatus.OK ).body( response )
     }

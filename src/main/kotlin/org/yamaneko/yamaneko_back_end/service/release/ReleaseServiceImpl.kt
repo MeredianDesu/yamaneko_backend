@@ -107,8 +107,16 @@ class ReleaseServiceImpl: ReleaseService {
     }
 
     override fun getReleaseByKeyword( keyword: String ): ResponseEntity<Any> {
-        val release = releaseRepository.findReleaseBySearcher( "%$keyword%" ) ?: return ResponseEntity.status( HttpStatus.NOT_FOUND ).body( "Release not found" )
+        val release = releaseRepository.findReleaseByName( "%$keyword%" ) ?: return ResponseEntity.status( HttpStatus.NOT_FOUND ).body( "Release not found" )
         val response = releaseMapper.toDTO( release )
+
+        return ResponseEntity.status( HttpStatus.OK ).body( response )
+    }
+
+    override fun getReleasesByGenre( genre: String ): ResponseEntity<Any> {
+        val releases = releaseRepository.findReleasesByGenre( "%$genre%" ) ?: return ResponseEntity.status( HttpStatus.NOT_FOUND ).body( "Releases not found" )
+
+        val response = releases.map{ releaseMapper.toDTO( it ) }
 
         return ResponseEntity.status( HttpStatus.OK ).body( response )
     }
