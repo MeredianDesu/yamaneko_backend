@@ -12,6 +12,6 @@ interface ReleaseRepository : JpaRepository<Release, Long>{
     @Query("FROM Release r WHERE r.id = :releaseId")
     fun findReleaseById( @Param("releaseId") releaseId: Long ): Release?
 
-//    @Query( "DELETE FROM Release r WHERE r.id = :releaseId" )
-//    fun deleteById( @Param( "releaseId" ) releaseId: Long )
+    @Query("FROM Release r WHERE r.translatedName ILIKE :keyword")
+    fun findReleaseBySearcher( @Param("keyword") keyword: String ): Release?
 }
