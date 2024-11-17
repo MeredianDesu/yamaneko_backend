@@ -72,12 +72,62 @@ class ReleaseController( @Autowired private val releaseService: ReleaseService )
         ]
     )
     fun getReleaseById( @Parameter( description = "ID of release.", example = "4" ) @PathVariable( required = false ) releaseId: Long ): ResponseEntity<ReleaseDTO>{
-        val release = releaseService.getRelease( releaseId )
+        val release = releaseService.getReleaseById( releaseId )
 
         return if( release != null )
             ResponseEntity.ok ( release )
         else
             ResponseEntity.status( HttpStatus.NOT_FOUND ).build()
+    }
+
+    @Operation( summary = "Find release by specified word by name." )
+    @GetMapping("/search/name/{keyword}")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Release found",
+                content = [ Content( mediaType = "application/json", schema = Schema( implementation = ReleaseDTO::class ) ) ]
+                ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Not found",
+                content = [ Content( mediaType = "text/plain", schema = Schema( type = "string", example = "Release not found" ) ) ]
+            )
+        ]
+    )
+    fun getReleaseByName( @Parameter( description = "Enter specified word for search." ) @PathVariable( required = true ) keyword: String ): ResponseEntity<Any>{
+        val response = releaseService.getReleaseByKeyword( keyword )
+
+        return if( response?.statusCode == HttpStatus.NOT_FOUND )
+            ResponseEntity.status( HttpStatus.NOT_FOUND ).body( "Release not found" )
+        else
+            ResponseEntity.status( HttpStatus.OK ).body( response )
+    }
+
+    @Operation( summary = "Find release by specified word by name." )
+    @GetMapping("/search/genre/{genre}")
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Release found",
+                content = [ Content( mediaType = "application/json", schema = Schema( implementation = ReleaseDTO::class ) ) ]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Not found",
+                content = [ Content( mediaType = "text/plain", schema = Schema( type = "string", example = "Release not found" ) ) ]
+            )
+        ]
+    )
+    fun getReleasesByGenre( @Parameter( description = "Enter specified genres for search." ) @PathVariable( required = true ) genre: String ): ResponseEntity<Any>{
+        val response = releaseService.getReleasesByGenre( genre )
+
+        return if( response?.statusCode == HttpStatus.NOT_FOUND )
+            ResponseEntity.status( HttpStatus.NOT_FOUND ).body( "Releases not found." )
+        else
+            ResponseEntity.status( HttpStatus.OK ).body( response )
     }
 
     @Operation( summary = "Create new release." )

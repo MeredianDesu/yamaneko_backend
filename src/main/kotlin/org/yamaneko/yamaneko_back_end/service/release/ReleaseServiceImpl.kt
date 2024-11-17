@@ -48,7 +48,7 @@ class ReleaseServiceImpl: ReleaseService {
         return releaseRepository.findLastReleases( length ).map{ releaseMapper.toDTO( it ) }
     }
 
-    override fun getRelease( id: Long ): ReleaseDTO? {
+    override fun getReleaseById(id: Long ): ReleaseDTO? {
         val release = releaseRepository.findReleaseById( id )
 
         return if( release != null )
@@ -104,5 +104,20 @@ class ReleaseServiceImpl: ReleaseService {
         else
             return ResponseEntity.status( HttpStatus.NOT_FOUND ).body( "Release not found" )
 
+    }
+
+    override fun getReleaseByKeyword( keyword: String ): ResponseEntity<Any> {
+        val release = releaseRepository.findReleaseByName( "%$keyword%" ) ?: return ResponseEntity.status( HttpStatus.NOT_FOUND ).body( "Release not found" )
+        val response = releaseMapper.toDTO( release )
+
+        return ResponseEntity.status( HttpStatus.OK ).body( response )
+    }
+
+    override fun getReleasesByGenre( genre: String ): ResponseEntity<Any> {
+        val releases = releaseRepository.findReleasesByGenre( "%$genre%" ) ?: return ResponseEntity.status( HttpStatus.NOT_FOUND ).body( "Releases not found" )
+
+        val response = releases.map{ releaseMapper.toDTO( it ) }
+
+        return ResponseEntity.status( HttpStatus.OK ).body( response )
     }
 }
