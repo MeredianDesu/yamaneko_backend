@@ -10,7 +10,7 @@ open class User{
     @GeneratedValue( strategy = GenerationType.IDENTITY )
     internal var id: Long = 0
 
-    @Column( name = "username" )
+    @Column( name = "username", unique = true )
     internal var username: String = ""
 
     @Column( name = "password", columnDefinition = "varchar(65)" )
