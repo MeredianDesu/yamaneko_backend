@@ -1,4 +1,4 @@
-package org.yamaneko.yamaneko_back_end.api.controllers
+package org.yamaneko.yamaneko_back_end.api.controllers.private_api
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -18,7 +18,7 @@ import org.yamaneko.yamaneko_back_end.service.user.UserService
 import org.yamaneko.yamaneko_back_end.utils.JwtUtil
 
 @RestController
-@RequestMapping( "/api/v1/users" )
+@RequestMapping( "/api/users/v1" )
 @Validated
 class UserController(
     @Autowired

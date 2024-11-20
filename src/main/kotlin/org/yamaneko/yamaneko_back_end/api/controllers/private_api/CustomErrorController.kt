@@ -1,4 +1,4 @@
-package org.yamaneko.yamaneko_back_end.api.controllers
+package org.yamaneko.yamaneko_back_end.api.controllers.private_api
 
 import org.springframework.boot.web.servlet.error.ErrorController
 import org.springframework.stereotype.Controller
@@ -13,9 +13,4 @@ class CustomErrorController: ErrorController {
     fun handleError(): String {
         return "Error"
     }
-    @Override
-    fun getErrorPath(): String{
-        return "/error"
-    }
-
 }

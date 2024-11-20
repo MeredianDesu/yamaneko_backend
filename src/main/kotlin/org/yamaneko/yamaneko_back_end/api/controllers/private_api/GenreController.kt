@@ -1,4 +1,4 @@
-package org.yamaneko.yamaneko_back_end.api.controllers
+package org.yamaneko.yamaneko_back_end.api.controllers.private_api
 
 import io.swagger.v3.oas.annotations.Operation
 import jakarta.validation.Valid
@@ -13,7 +13,7 @@ import org.yamaneko.yamaneko_back_end.repository.GenreRepository
 import org.yamaneko.yamaneko_back_end.service.genre.GenreService
 
 @RestController
-@RequestMapping("/api/v1/genres")
+@RequestMapping("/api/genres/v1")
 class GenreController(
     @Autowired private val genreService: GenreService,
     @Autowired private val genreRepository: GenreRepository

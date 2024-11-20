@@ -1,4 +1,4 @@
-package org.yamaneko.yamaneko_back_end.api.controllers
+package org.yamaneko.yamaneko_back_end.api.controllers.private_api
 
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,7 +14,7 @@ import org.yamaneko.yamaneko_back_end.dto.character.CharacterRequestDTO
 import org.yamaneko.yamaneko_back_end.service.character.CharacterService
 
 @RestController
-@RequestMapping( "/api/v1/characters")
+@RequestMapping( "/api/characters/v1")
 class CharacterController(
     @Autowired val characterService: CharacterService
 ) {

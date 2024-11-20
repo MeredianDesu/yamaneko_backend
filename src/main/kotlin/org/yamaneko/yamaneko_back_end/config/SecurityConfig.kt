@@ -45,18 +45,25 @@ class SecurityConfig(
                         "/docs"                  // Ваш кастомный маршрут для Swagger
                     ).permitAll()
                     .requestMatchers(
-                        "/api/v1/users/register",
-                        "/api/v1/users/login",
-                        "/api/v1/users/refresh",
+                        "/api/auth/**",
+                        "/files/"
                     ).permitAll()
                     authorizeHttpRequests
-                        .anyRequest()
+                        .requestMatchers(
+                            "/api/users/**",
+                            "/api/releases/**",
+                            "/api/news/**",
+                            "/api/genres/**",
+                            "/api/banners/**",
+                            "/api/characters/**",
+                            "/api/team/**"
+                        )
                         .hasAuthority("ADMIN")
             }
             .exceptionHandling{ exceptionHandling ->
                 exceptionHandling
                     .authenticationEntryPoint{ request, response, authException ->
-                        val contentTypeHeader = request.getHeader("Content-Type")
+                        val contentTypeHeader = request.getHeader("Accept")
                         if( request.requestURI.startsWith( "/login" ) ) {
                             response.sendRedirect( "/login" )
                         }

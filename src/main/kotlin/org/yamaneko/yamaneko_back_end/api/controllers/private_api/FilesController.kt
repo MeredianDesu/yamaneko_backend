@@ -1,4 +1,4 @@
-package org.yamaneko.yamaneko_back_end.api.controllers
+package org.yamaneko.yamaneko_back_end.api.controllers.private_api
 
 import org.springframework.core.io.Resource
 import org.springframework.core.io.UrlResource
@@ -14,7 +14,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 @RestController
-@RequestMapping("/files" )
+@RequestMapping("files" )
 class FilesController {
 
     @GetMapping( "/{filename:.+}" )

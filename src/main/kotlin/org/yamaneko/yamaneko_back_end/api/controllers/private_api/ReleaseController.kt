@@ -1,4 +1,4 @@
-package org.yamaneko.yamaneko_back_end.api.controllers
+package org.yamaneko.yamaneko_back_end.api.controllers.private_api
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -15,7 +15,7 @@ import org.yamaneko.yamaneko_back_end.dto.release.ReleaseRequestPost
 import org.yamaneko.yamaneko_back_end.service.release.ReleaseService
 
 @RestController
-@RequestMapping("/api/v1/releases" )
+@RequestMapping("/api/releases/v1" )
 class ReleaseController( @Autowired private val releaseService: ReleaseService ) {
 
     @Operation( summary = "Get all releases from DB." )

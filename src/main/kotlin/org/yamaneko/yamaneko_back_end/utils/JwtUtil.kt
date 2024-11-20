@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.yamaneko.yamaneko_back_end.entity.User
 import java.util.*
@@ -15,8 +16,8 @@ class JwtUtil {
     @Autowired
     lateinit var dateFormatter: DateFormatter
 
-//    @Value("\${jwt.secret}")
-    private var secretKey: String = "V329bvkSr348NnE4yJsbaT786iRERK6h"
+    @Value("\${jwt.secret}")
+    private var secretKey: String = ""
     private val expirationMs: Long = 360_000
 
     fun generateToken( user: User ): String{

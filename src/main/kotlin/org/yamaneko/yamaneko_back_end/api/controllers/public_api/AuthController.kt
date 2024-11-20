@@ -1,4 +1,4 @@
-package org.yamaneko.yamaneko_back_end.api.controllers
+package org.yamaneko.yamaneko_back_end.api.controllers.public_api
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -24,7 +24,7 @@ import org.yamaneko.yamaneko_back_end.repository.UserTokensRepository
 import org.yamaneko.yamaneko_back_end.service.user.UserService
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/api/auth/v1/")
 class AuthController(
     @Autowired private val userService: UserService,
     @Autowired private val userRepository: UserRepository,

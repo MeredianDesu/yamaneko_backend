@@ -1,4 +1,4 @@
-package org.yamaneko.yamaneko_back_end.api.controllers
+package org.yamaneko.yamaneko_back_end.api.controllers.private_api
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -15,20 +15,17 @@ import org.springframework.web.bind.annotation.RestController
 import org.yamaneko.yamaneko_back_end.dto.banner.BannerDTO
 import org.yamaneko.yamaneko_back_end.dto.banner.BannerRequestDTO
 import org.yamaneko.yamaneko_back_end.entity.Banner
-import org.yamaneko.yamaneko_back_end.mappers.BannerMapper
 import org.yamaneko.yamaneko_back_end.repository.BannerRepository
 import org.yamaneko.yamaneko_back_end.service.banner.BannerService
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @RestController
-@RequestMapping( "api/v1/banners" )
+@RequestMapping( "api/banners/v1" )
 class BannerController(
     @Autowired val bannerService: BannerService,
     @Autowired val bannerRepository: BannerRepository
 ) {
-
-    private val bannerMapper = BannerMapper()
 
     @Operation( summary = "Get banners by visibility." )
     @GetMapping("")
