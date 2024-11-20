@@ -64,7 +64,6 @@ class AuthController(
 
         val response = UserAuthResponse(
             accessToken = tokens?.get( 0 ),
-            refreshToken = tokens?.get( 1 )
         )
 
         return ResponseEntity.status( HttpStatus.OK ).body( response )
@@ -102,8 +101,7 @@ class AuthController(
         val tokens = status.body?.split('|')
 
         val response = UserAuthResponse(
-            accessToken = tokens?.get(0),
-            refreshToken = tokens?.get(1)
+            accessToken = tokens?.get(0)
         )
 
         return ResponseEntity.status( HttpStatus.CREATED ).body( response )
