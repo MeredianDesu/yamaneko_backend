@@ -1,4 +1,4 @@
-package org.yamaneko.yamaneko_back_end.api.controllers
+package org.yamaneko.yamaneko_back_end.api.controllers.private_api
 
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.beans.factory.annotation.Autowired
@@ -10,7 +10,7 @@ import org.yamaneko.yamaneko_back_end.dto.team.TeamRequestDTO
 import org.yamaneko.yamaneko_back_end.service.team.TeamService
 
 @RestController
-@RequestMapping( "/api/v1/team" )
+@RequestMapping( "/api/team/v1" )
 class TeamController(
     @Autowired private val teamService: TeamService,
 ) {

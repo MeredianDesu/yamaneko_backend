@@ -1,4 +1,4 @@
-package org.yamaneko.yamaneko_back_end.api.controllers
+package org.yamaneko.yamaneko_back_end.api.controllers.private_api
 
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.beans.factory.annotation.Autowired
@@ -9,7 +9,7 @@ import org.yamaneko.yamaneko_back_end.dto.news.NewsDTO
 import org.yamaneko.yamaneko_back_end.service.news.NewsService
 
 @RestController
-@RequestMapping("api/v1/news")
+@RequestMapping("api/news/v1")
 class NewsController( @Autowired private val newsService: NewsService ) {
 
     @Operation( summary = "Get all news." )

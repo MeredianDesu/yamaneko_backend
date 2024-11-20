@@ -91,29 +91,29 @@ class UserServiceImpl: UserService {
 
     @Transactional
     override fun authUser( request: UserAuthRequest ): ResponseEntity<String> {
-        // Get user from DB else NULL
+        // Get user from DB
         val user = userRepository.findByEmail( request.email )
             ?: return ResponseEntity.status( HttpStatus.NOT_FOUND ).body( "User not found" )
 
-        if( user.email == request.email && passwordSecurity.verifyPassword( request.password, user.password ) ) {
-            val refreshToken = refreshTokensRepository.findByUser( user.id )?.token
-            // If refresh token not expired
-            if ( refreshToken != null ) {
-                val newAccessToken = generateAndSaveAccessToken( user )
+        if( !passwordSecurity.verifyPassword( request.password ,user.password ) ) {
 
-                return ResponseEntity.status( HttpStatus.OK ).body( "$newAccessToken|$refreshToken")
-            }
-            // If refresh token expired or not exist
-            else {
-                generateAndSaveAccessToken( user )
-                generateAndSaveRefreshToken( user )
-
-                // Return 401 with new tokens creations
-                return ResponseEntity.status( HttpStatus.UNAUTHORIZED ).body( "Unauthorized" )
-            }
+            return ResponseEntity.status( HttpStatus.UNAUTHORIZED ).body("Invalid credentials")
         }
-        else
-            return ResponseEntity.status( HttpStatus.UNAUTHORIZED ).body( "Invalid credentials" )
+
+        // Check for refresh token existing
+        val refreshToken = refreshTokensRepository.findByUser( user.id )?.token
+
+        // If refresh token not expired
+        return if ( refreshToken != null ) {
+            val newAccessToken = generateAndSaveAccessToken( user )
+            ResponseEntity.status( HttpStatus.OK ).body( "$newAccessToken|$refreshToken" )
+        }
+        else {
+            // If refresh token expired or not exist, generate new
+            val newAccessToken = generateAndSaveAccessToken( user )
+            val newRefreshToken = generateAndSaveRefreshToken( user )
+            ResponseEntity.status( HttpStatus.OK ).body( "$newAccessToken|$newRefreshToken" )
+        }
     }
 
     override fun generateAndSaveAccessToken( user: User ): String{

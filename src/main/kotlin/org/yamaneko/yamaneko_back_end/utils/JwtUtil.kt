@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.yamaneko.yamaneko_back_end.entity.User
-import java.security.MessageDigest
 import java.util.*
 
 
@@ -17,8 +16,8 @@ class JwtUtil {
     @Autowired
     lateinit var dateFormatter: DateFormatter
 
-//    @Value("\${jwt.secret}")
-    private var secretKey: String = "V329bvkSr348NnE4yJsbaT786iRERK6h"
+    @Value("\${jwt.secret}")
+    private var secretKey: String = ""
     private val expirationMs: Long = 360_000
 
     fun generateToken( user: User ): String{
@@ -41,17 +40,6 @@ class JwtUtil {
         val claims = extractClaims( token )
 
         return claims?.get("id", Integer::class.java )?.toString()
-    }
-
-    fun extractUsername( token: String ): String?{
-
-        return extractClaims( token )?.subject
-    }
-
-    fun extractRoles( token: String ): List<String>? {
-        val roles = extractClaims( token )?.get( "roles", List::class.java )
-
-        return roles?.filterIsInstance<String>()
     }
 
     fun extractExpiration( token: String ): Date? {
@@ -79,21 +67,9 @@ class JwtUtil {
         }
     }
 
-    fun isTokenExpired( token: String ): Boolean {
-
-        return extractExpiration( token )?.before( Date() )!!
-    }
-
     fun validateToken( token: String, id: String ): Boolean {
 
         return id == extractUserId( token )/* && !isTokenExpired( token )*/
-    }
-
-    fun hashToken( token: String ): String{
-        val digest = MessageDigest.getInstance("SHA-256")
-        val hashBytes = digest.digest( token.toByteArray() )
-
-        return Base64.getEncoder().encodeToString( hashBytes )
     }
 
     fun generateRefreshToken(): Map<String, String>{

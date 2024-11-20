@@ -15,6 +15,11 @@ class PasswordSecurity {
 
     fun verifyPassword( userPassword: String, hashPassword: String ): Boolean{
 
-        return BCrypt.checkpw( userPassword, hashPassword )
+        return try {
+            BCrypt.checkpw( userPassword, hashPassword )
+        } catch( e: IllegalArgumentException ){
+            println( "Verify password exception: $e")
+            false
+        }
     }
 }
