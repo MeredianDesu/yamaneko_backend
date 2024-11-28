@@ -9,16 +9,14 @@ import org.springframework.stereotype.Component
 import org.yamaneko.yamaneko_back_end.entity.User
 import java.util.*
 
-
 @Component
-class JwtUtil {
+class JwtUtil(
+    @Value("\${jwt.secret}") val secretKey: String
+) {
+    private val expirationMs: Long = 360_000
 
     @Autowired
-    lateinit var dateFormatter: DateFormatter
-
-    @Value("\${jwt.secret}")
-    private var secretKey: String = ""
-    private val expirationMs: Long = 360_000
+    private lateinit var dateFormatter: DateFormatter
 
     fun generateToken( user: User ): String{
         val claims: Map<String, Any> = mapOf(

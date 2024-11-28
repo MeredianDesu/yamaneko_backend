@@ -28,7 +28,8 @@ class UserController(
 
     private val userMapper = UserMapper()
 
-    private val jwtUtil: JwtUtil = JwtUtil()
+    @Autowired
+    private lateinit var jwtUtil: JwtUtil
 
     @Operation( summary = "Get all users." )
     @GetMapping("")

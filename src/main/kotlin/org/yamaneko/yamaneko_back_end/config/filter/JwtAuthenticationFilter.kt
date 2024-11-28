@@ -49,7 +49,6 @@ class JwtAuthenticationFilter: OncePerRequestFilter() {
             }
         }
         request.setAttribute( "AuthorizationToken", jwt )
-//        println( "Filter: JWT: $jwt" )
-        filterChain.doFilter(request, response)
+        filterChain.doFilter( request, response )
     }
 }
