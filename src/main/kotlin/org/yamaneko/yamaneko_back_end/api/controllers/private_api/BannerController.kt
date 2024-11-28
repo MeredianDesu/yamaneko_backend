@@ -2,6 +2,10 @@ package org.yamaneko.yamaneko_back_end.api.controllers.private_api
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -28,13 +32,45 @@ class BannerController(
 ) {
 
     @Operation( summary = "Get banners by visibility." )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Banners Returned",
+                content = [ Content( mediaType = "application/json", schema = Schema( implementation = BannerDTO::class ) ) ]
+            ),
+            ApiResponse(
+                responseCode = "203",
+                description = "No content",
+                content = [ Content( mediaType = "text/plain", schema = Schema( type = "string", example = "No content" ) ) ]
+            )
+        ]
+    )
     @GetMapping("")
     fun getBanners( @Parameter( description = "Fetch advertisements by visibility.", example = "true" ) @RequestParam( required = false ) visible: Boolean? ): ResponseEntity< List<BannerDTO> > {
 
         return when( visible ){
-            true -> ResponseEntity.status( HttpStatus.OK ).body( bannerService.getAvailableAdvertisements() )
-            false -> ResponseEntity.status( HttpStatus.NOT_FOUND ).body( bannerService.getHiddenAdvertisements() )
-            else -> ResponseEntity.status( HttpStatus.OK ).body( bannerService.getAllAdvertisements() )
+            true -> {
+                val banners = bannerService.getAvailableAdvertisements()
+                if( banners.isNotEmpty() )
+                    ResponseEntity.status( HttpStatus.OK ).body( banners )
+                else
+                    ResponseEntity.status( HttpStatus.NO_CONTENT ).body( banners )
+            }
+            false -> {
+                val banners = bannerService.getHiddenAdvertisements()
+                if( banners.isNotEmpty() )
+                    ResponseEntity.status( HttpStatus.OK ).body( banners )
+                else
+                    ResponseEntity.status( HttpStatus.NO_CONTENT ).body( banners )
+            }
+            else -> {
+                val banners = bannerService.getAllAdvertisements()
+                if( banners.isNotEmpty() )
+                    ResponseEntity.status( HttpStatus.OK ).body( banners )
+                else
+                    ResponseEntity.status( HttpStatus.NO_CONTENT ).body( banners )
+            }
         }
     }
 

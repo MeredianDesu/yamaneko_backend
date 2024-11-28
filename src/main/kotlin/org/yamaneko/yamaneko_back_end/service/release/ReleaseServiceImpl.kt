@@ -71,7 +71,7 @@ class ReleaseServiceImpl: ReleaseService {
             posterImageUrl = request.posterImageUrl.takeIf { !it.isNullOrEmpty() } ?: "${filesServerUrl}${request.posterImageUrl}"
             previewVideoUrl = request.previewVideoUrl.takeIf{ !it.isNullOrEmpty() } ?: "${filesServerUrl}${request.previewVideoUrl}"
             videoUrl = request.videoUrl.takeIf{ !it.isNullOrEmpty() } ?: "${filesServerUrl}${request.videoUrl}"
-            sinopsis = request.sinopsis
+            sinopsis = request.synopsis
             info = request.info
             dubbers = request.dubbers.flatMap { role ->
                 val charactersList = characterRepository.findAllById( role.charactersId )

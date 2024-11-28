@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.responses.ApiResponse
+import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -45,7 +46,7 @@ class ReleaseController( @Autowired private val releaseService: ReleaseService )
             releaseService.getAllReleases()
 
         return if( releases.isNotEmpty() )
-            ResponseEntity.ok( releases )
+            ResponseEntity.status( HttpStatus.OK ).body( releases )
         else
             ResponseEntity.status( HttpStatus.NO_CONTENT ).build()
     }
@@ -146,7 +147,7 @@ class ReleaseController( @Autowired private val releaseService: ReleaseService )
             ),
         ]
     )
-    fun saveRelease( @RequestBody request: ReleaseRequestPost ): ResponseEntity<ReleaseDTO>{
+    fun saveRelease( @Valid @RequestBody request: ReleaseRequestPost ): ResponseEntity<ReleaseDTO>{
         val response = releaseService.createRelease( request )
 
         return ResponseEntity.status( HttpStatus.CREATED ).body( response )
