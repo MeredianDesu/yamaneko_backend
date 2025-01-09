@@ -13,7 +13,7 @@ import java.util.*
 class JwtUtil(
     @Value("\${jwt.secret}") val secretKey: String
 ) {
-    private val expirationMs: Long = 360_000
+    private val expirationMs: Long = 30 * 60
 
     @Autowired
     private lateinit var dateFormatter: DateFormatter
