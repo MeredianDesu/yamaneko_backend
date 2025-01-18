@@ -3,6 +3,7 @@ package org.yamaneko.yamaneko_back_end.config
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
@@ -36,6 +37,9 @@ class SecurityConfig(
             }
             .authorizeHttpRequests{ authorizeHttpRequests ->
                 authorizeHttpRequests
+                    .requestMatchers(
+                        HttpMethod.OPTIONS, "/api/**"
+                    ).permitAll()
                     .requestMatchers(
                         "/login",                // Доступ к странице логина
                         "/swagger-ui/**",        // Swagger UI
