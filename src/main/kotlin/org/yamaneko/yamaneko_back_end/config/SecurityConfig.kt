@@ -13,6 +13,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import org.yamaneko.yamaneko_back_end.config.filter.JwtAuthenticationFilter
 import org.yamaneko.yamaneko_back_end.service.user_details.CustomUserDetailsService
 import org.yamaneko.yamaneko_back_end.utils.PasswordSecurity
@@ -29,6 +32,9 @@ class SecurityConfig(
             csrf
                 .disable()
         }
+            .cors {
+                it.configurationSource(corsConfigurationSource())
+            }
             .formLogin{
                 formLogin ->
                     formLogin.loginPage("/login")
@@ -38,7 +44,7 @@ class SecurityConfig(
             .authorizeHttpRequests{ authorizeHttpRequests ->
                 authorizeHttpRequests
                     .requestMatchers(
-                        HttpMethod.OPTIONS, "/api/**"
+                        HttpMethod.OPTIONS, "/api/**" // добавление этого параметра зафиксило cors на React
                     ).permitAll()
                     .requestMatchers(
                         "/login",                // Доступ к странице логина
@@ -137,5 +143,19 @@ class SecurityConfig(
         })
 
         return provider
+    }
+
+    @Bean
+    fun corsConfigurationSource(): CorsConfigurationSource {
+        val configuration = CorsConfiguration()
+        configuration.allowedOrigins = listOf("https://yamaneko.isn.one", "http://localhost:5173/", "http://localhost:8080/", "https://admin.yamaneko.isn.one/")
+        configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
+        configuration.allowedHeaders = listOf("Authorization", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Content-Type", "X-Requested-With")
+        configuration.allowCredentials = true
+
+        val source = UrlBasedCorsConfigurationSource()
+        source.registerCorsConfiguration("/**", configuration)
+
+        return source
     }
 }

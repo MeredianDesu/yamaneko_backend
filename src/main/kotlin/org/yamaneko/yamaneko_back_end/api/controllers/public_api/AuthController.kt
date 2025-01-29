@@ -109,17 +109,40 @@ class AuthController(
 
     @Operation( summary = "Refresh access token" )
     @PostMapping( "/refresh" )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Token refreshed",
+                content = [ Content( mediaType = "application/json", schema = Schema( implementation = UserAuthResponse::class ) ) ]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Bad request",
+                content = [ Content( mediaType = "text/plain", schema = Schema( type = "string", example = "Bad request" ) ) ]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "User or refresh token not found",
+                content = [ Content( mediaType = "text/plain", schema = Schema( type = "string", example = "User or refresh token not found" ) ) ]
+            ),
+        ]
+    )
     fun refreshToken( @RequestAttribute( "AuthorizationToken" ) @Parameter( description = "JWT token." ) authHeader: String ): ResponseEntity<Any>{
-        var accessToken = authHeader.removePrefix("Bearer ").trim()
-        val userIdByAccessToken = userTokensRepository.findByToken( accessToken )?.user?.id ?: return ResponseEntity.status( HttpStatus.NOT_FOUND ).build()
+        var newAccessToken = authHeader.removePrefix("Bearer ").trim()
+        val userIdByAccessToken = userTokensRepository.findByToken( newAccessToken )?.user?.id ?: return ResponseEntity.status( HttpStatus.NOT_FOUND ).build()
         if( userRefreshTokensRepository.findByUser( userIdByAccessToken )?.token != null ){
             val user = userRepository.findById( userIdByAccessToken ).get()
-            accessToken = userService.generateAndSaveAccessToken( user )
+            newAccessToken = userService.generateAndSaveAccessToken( user )
         }
         else{
             return ResponseEntity.status( HttpStatus.UNAUTHORIZED ).build()
         }
 
-        return ResponseEntity.status( HttpStatus.OK ).body( accessToken )
+        val response = UserAuthResponse(
+            accessToken = newAccessToken,
+        )
+
+        return ResponseEntity.status( HttpStatus.OK ).body( response )
     }
 }
