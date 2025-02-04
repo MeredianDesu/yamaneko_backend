@@ -32,9 +32,9 @@ class SecurityConfig(
             csrf
                 .disable()
         }
-            .cors {
-                it.configurationSource(corsConfigurationSource())
-            }
+//            .cors {
+//                it.configurationSource(corsConfigurationSource())
+//            }
             .formLogin{
                 formLogin ->
                     formLogin.loginPage("/login")
@@ -145,17 +145,17 @@ class SecurityConfig(
         return provider
     }
 
-    @Bean
-    fun corsConfigurationSource(): CorsConfigurationSource {
-        val configuration = CorsConfiguration()
-        configuration.allowedOrigins = listOf("https://yamaneko.isn.one", "http://localhost:5173/", "http://localhost:8080/", "https://admin.yamaneko.isn.one/")
-        configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
-        configuration.allowedHeaders = listOf("Authorization", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Content-Type", "X-Requested-With")
-        configuration.allowCredentials = true
-
-        val source = UrlBasedCorsConfigurationSource()
-        source.registerCorsConfiguration("/**", configuration)
-
-        return source
-    }
+//    @Bean
+//    fun corsConfigurationSource(): CorsConfigurationSource {
+//        val configuration = CorsConfiguration()
+//        configuration.allowedOrigins = listOf("https://yamaneko.isn.one", "http://localhost:5173/", "http://localhost:8080/", "https://admin.yamaneko.isn.one/")
+//        configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
+//        configuration.allowedHeaders = listOf("Authorization", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Content-Type", "X-Requested-With")
+//        configuration.allowCredentials = true
+//
+//        val source = UrlBasedCorsConfigurationSource()
+//        source.registerCorsConfiguration("/**", configuration)
+//
+//        return source
+//    }
 }
