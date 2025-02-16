@@ -59,17 +59,18 @@ class SecurityConfig(
                         "/files/"
                     ).permitAll()
                 /* Временно убираем аутентификацию */
-//                    authorizeHttpRequests
-//                        .requestMatchers(
-//                            "/api/users/**",
-//                            "/api/releases/**",
-//                            "/api/news/**",
-//                            "/api/genres/**",
-//                            "/api/banners/**",
-//                            "/api/characters/**",
-//                            "/api/team/**"
-//                        )
+                    authorizeHttpRequests
+                        .requestMatchers(
+                            "/api/users/**",
+                            "/api/releases/**",
+                            "/api/news/**",
+                            "/api/genres/**",
+                            "/api/banners/**",
+                            "/api/characters/**",
+                            "/api/team/**"
+                        )
 //                        .hasAuthority("ADMIN")
+                        .permitAll()
             }
             .exceptionHandling{ exceptionHandling ->
                 exceptionHandling
