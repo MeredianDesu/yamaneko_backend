@@ -58,17 +58,18 @@ class SecurityConfig(
                         "/api/auth/**",
                         "/files/"
                     ).permitAll()
-                    authorizeHttpRequests
-                        .requestMatchers(
-                            "/api/users/**",
-                            "/api/releases/**",
-                            "/api/news/**",
-                            "/api/genres/**",
-                            "/api/banners/**",
-                            "/api/characters/**",
-                            "/api/team/**"
-                        )
-                        .hasAuthority("ADMIN")
+                /* Временно убираем аутентификацию */
+//                    authorizeHttpRequests
+//                        .requestMatchers(
+//                            "/api/users/**",
+//                            "/api/releases/**",
+//                            "/api/news/**",
+//                            "/api/genres/**",
+//                            "/api/banners/**",
+//                            "/api/characters/**",
+//                            "/api/team/**"
+//                        )
+//                        .hasAuthority("ADMIN")
             }
             .exceptionHandling{ exceptionHandling ->
                 exceptionHandling
