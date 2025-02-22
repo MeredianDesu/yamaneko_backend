@@ -1,6 +1,7 @@
 package org.yamaneko.yamaneko_back_end.service.team
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.yamaneko.yamaneko_back_end.dto.team.TeamDTO
 import org.yamaneko.yamaneko_back_end.dto.team.TeamRequestDTO
@@ -19,8 +20,8 @@ class TeamServiceImpl: TeamService {
     private lateinit var teamRepository: TeamRepository
     @Autowired
     private lateinit var userRepository: UserRepository
-    @Autowired
-    private lateinit var characterRepository: CharacterRepository
+//    @Autowired
+//    private lateinit var characterRepository: CharacterRepository
 
 
     override fun getTeamList(): List<TeamDTO> {
@@ -40,5 +41,27 @@ class TeamServiceImpl: TeamService {
         val savedMember = teamRepository.save( member )
 
         return teamMapper.toDTO( savedMember )
+    }
+
+    override fun getMemberById( memberId: Long ): TeamDTO? {
+        if( teamRepository.existsById( memberId ) ){
+            val member = teamRepository.findById( memberId ).get()
+
+            return teamMapper.toDTO( member )
+        }
+        else{
+            return null
+        }
+    }
+
+    override fun removeTeamMember(memberId: Long): ResponseEntity<Any> {
+        if( teamRepository.existsById( memberId ) ){
+            teamRepository.deleteById( memberId )
+
+            return ResponseEntity.ok().build()
+        }
+        else{
+            return ResponseEntity.notFound().build()
+        }
     }
 }

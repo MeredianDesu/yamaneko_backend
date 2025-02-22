@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.yamaneko.yamaneko_back_end.dto.ErrorResponse
 import org.yamaneko.yamaneko_back_end.dto.release.ReleaseDTO
 import org.yamaneko.yamaneko_back_end.dto.release.ReleaseRequestPost
 import org.yamaneko.yamaneko_back_end.service.release.ReleaseService
@@ -48,7 +49,7 @@ class ReleaseController( @Autowired private val releaseService: ReleaseService )
         return if( releases.isNotEmpty() )
             ResponseEntity.status( HttpStatus.OK ).body( releases )
         else
-            ResponseEntity.status( HttpStatus.NO_CONTENT ).build()
+            ResponseEntity.noContent().build()
     }
 
     @Operation( summary = "Get release by ID.")
@@ -68,7 +69,7 @@ class ReleaseController( @Autowired private val releaseService: ReleaseService )
             ApiResponse(
                 responseCode = "404",
                 description = "Not found",
-                content = [ Content( mediaType = "text/plain", schema = Schema( type = "string", example = "Release not found" ) ) ]
+                content = [ Content( mediaType = "text/plain", schema = Schema( implementation = ErrorResponse::class ) ) ]
             ),
         ]
     )
@@ -76,9 +77,9 @@ class ReleaseController( @Autowired private val releaseService: ReleaseService )
         val release = releaseService.getReleaseById( releaseId )
 
         return if( release != null )
-            ResponseEntity.ok ( release )
+            ResponseEntity.status( HttpStatus.OK ).body( release )
         else
-            ResponseEntity.status( HttpStatus.NOT_FOUND ).build()
+            ResponseEntity.notFound().build()
     }
 
     @Operation( summary = "Find release by specified word by name." )
@@ -101,7 +102,7 @@ class ReleaseController( @Autowired private val releaseService: ReleaseService )
         val response = releaseService.getReleaseByKeyword( keyword )
 
         return if( response?.statusCode == HttpStatus.NOT_FOUND )
-            ResponseEntity.status( HttpStatus.NOT_FOUND ).body( "Release not found" )
+            ResponseEntity.notFound().build()
         else
             ResponseEntity.status( HttpStatus.OK ).body( response )
     }
@@ -126,7 +127,7 @@ class ReleaseController( @Autowired private val releaseService: ReleaseService )
         val response = releaseService.getReleasesByGenre( genre )
 
         return if( response?.statusCode == HttpStatus.NOT_FOUND )
-            ResponseEntity.status( HttpStatus.NOT_FOUND ).body( "Releases not found." )
+            ResponseEntity.notFound().build()
         else
             ResponseEntity.status( HttpStatus.OK ).body( response )
     }
@@ -178,8 +179,8 @@ class ReleaseController( @Autowired private val releaseService: ReleaseService )
         val status = releaseService.removeRelease( releaseId )
 
         return if( status.statusCode == HttpStatus.OK )
-            ResponseEntity.status( HttpStatus.OK ).body( "Release deleted." )
+            ResponseEntity.ok().build()
         else
-            ResponseEntity.status( HttpStatus.NOT_FOUND ).body( "Release not found." )
+            ResponseEntity.notFound().build()
     }
 }

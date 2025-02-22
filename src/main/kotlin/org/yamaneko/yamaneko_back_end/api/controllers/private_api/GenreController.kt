@@ -1,6 +1,7 @@
 package org.yamaneko.yamaneko_back_end.api.controllers.private_api
 
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -25,9 +26,20 @@ class GenreController(
         val genresList = genreService.getAllGenres()
 
         return if( genresList.isEmpty() )
-            ResponseEntity.status( HttpStatus.NO_CONTENT ).build()
+            ResponseEntity.status( HttpStatus.NOT_FOUND ).build()
         else
             ResponseEntity.status( HttpStatus.OK ).body( genresList )
+    }
+
+    @Operation( summary = "Get genre by ID.")
+    @GetMapping("{genreId}")
+    fun getGenreById( @Parameter( description = "Enter id of the genre." ) @PathVariable( required = true ) genreId: Long ): ResponseEntity<GenreDTO> {
+        val genre = genreService.getGenreById(genreId)
+
+        return if( genre != null )
+            ResponseEntity.status( HttpStatus.OK ).body( genre )
+        else
+            ResponseEntity.status( HttpStatus.NOT_FOUND ).build()
     }
 
     @Operation( summary = "Create a new genre." )
@@ -43,5 +55,15 @@ class GenreController(
         )
 
         return ResponseEntity.status( HttpStatus.CREATED ).body( response )
+    }
+
+    @Operation( summary = "Delete genre.")
+    @DeleteMapping("{genreId}")
+    fun removeGenre( @Parameter( description = "Enter id of the genre." ) @PathVariable( required = true ) genreId: Long ): ResponseEntity<Any> {
+
+        return if( genreService.removeGenre( genreId ).statusCode == HttpStatus.OK )
+            ResponseEntity.ok().build()
+        else
+            ResponseEntity.notFound().build()
     }
 }

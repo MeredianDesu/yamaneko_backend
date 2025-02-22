@@ -2,6 +2,8 @@ package org.yamaneko.yamaneko_back_end.service.character
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.yamaneko.yamaneko_back_end.dto.character.CharacterDTO
 import org.yamaneko.yamaneko_back_end.dto.character.CharacterRequestDTO
@@ -34,5 +36,22 @@ class CharacterServiceImpl: CharacterService {
         val savedCharacter = characterRepository.save( character )
 
         return characterMapper.toDTO( savedCharacter )
+    }
+
+    override fun removeCharacter(characterId: Long): ResponseEntity<Any> {
+        val character = characterRepository.findById( characterId )
+
+        return if( !character.isEmpty ) {
+            characterRepository.deleteById( characterId )
+            ResponseEntity.status(HttpStatus.OK).build()
+        }
+        else
+            ResponseEntity.status( HttpStatus.NOT_FOUND ).build()
+    }
+
+    override fun getCharacterById( id: Long ): CharacterDTO? {
+        val character = characterRepository.findById( id ).get()
+
+        return characterMapper.toDTO( character )
     }
 }
