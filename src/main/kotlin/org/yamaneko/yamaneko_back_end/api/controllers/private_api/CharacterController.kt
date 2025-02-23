@@ -6,20 +6,33 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.yamaneko.yamaneko_back_end.dto.ErrorResponse
+import org.yamaneko.yamaneko_back_end.dto.bot_dto.BotRequestDTO
 import org.yamaneko.yamaneko_back_end.dto.character.CharacterDTO
 import org.yamaneko.yamaneko_back_end.dto.character.CharacterRequestDTO
+import org.yamaneko.yamaneko_back_end.dto.character.CharacterRequestPatch
+import org.yamaneko.yamaneko_back_end.repository.CharacterRepository
 import org.yamaneko.yamaneko_back_end.service.character.CharacterService
+import org.yamaneko.yamaneko_back_end.service.discord_bot.BotService
+import org.yamaneko.yamaneko_back_end.utils.AuthenticatedUserData
+import org.yamaneko.yamaneko_back_end.utils.DateFormatter
+import java.time.LocalDateTime
+import java.util.*
 
 @RestController
 @RequestMapping( "/api/characters/v1")
 class CharacterController(
-    @Autowired val characterService: CharacterService
+    @Autowired val characterService: CharacterService,
+    private val characterRepository: CharacterRepository,
+    private val botService: BotService
 ) {
+
+    private val userData = AuthenticatedUserData()
 
     @Operation( summary = "Get all characters form DB." )
     @GetMapping("")
@@ -115,8 +128,19 @@ class CharacterController(
             ),
         ]
     )
-    fun saveCharacter( @RequestBody request: CharacterRequestDTO ): ResponseEntity<CharacterDTO>{
+    fun saveCharacter( @RequestBody request: CharacterRequestDTO, httpRequest: HttpServletRequest ): ResponseEntity<CharacterDTO>{
         val response = characterService.createCharacter( request )
+
+        val botNotificationBody = BotRequestDTO(
+            id = response.id,
+            name = response.originalName,
+            timestamp = DateFormatter().dateToString(Date()),
+
+            user = userData.getAuthenticatedUser(),
+            address = httpRequest.remoteAddr,
+            method = httpRequest.method,
+        )
+        botService.createCharacterNotification( botNotificationBody )
 
         return ResponseEntity.status( HttpStatus.CREATED ).body( response )
     }
@@ -133,5 +157,25 @@ class CharacterController(
             HttpStatus.NOT_FOUND -> ResponseEntity.status( HttpStatus.NOT_FOUND ).body( "Not found" )
             else -> ResponseEntity.unprocessableEntity().build()
         }
+    }
+
+    @Operation( summary = "Update character." )
+    @PatchMapping("{characterId}")
+    fun patchCharacter( @PathVariable characterId: Long, @RequestBody request: CharacterRequestPatch, httpRequest: HttpServletRequest ): ResponseEntity<Any>{
+        val characterName = characterRepository.findById( characterId ).get().translatedName
+
+        characterService.updateCharacter( request, characterId )
+        val botNotificationBody = BotRequestDTO(
+            id = characterId,
+            name = characterName,
+            timestamp = DateFormatter().dateToString(Date()),
+
+            user = userData.getAuthenticatedUser(),
+            address = httpRequest.remoteAddr,
+            method = httpRequest.method,
+        )
+        botService.createCharacterNotification( botNotificationBody )
+
+        return ResponseEntity.ok().build()
     }
 }

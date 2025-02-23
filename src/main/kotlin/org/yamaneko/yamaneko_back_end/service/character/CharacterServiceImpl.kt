@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.yamaneko.yamaneko_back_end.dto.character.CharacterDTO
 import org.yamaneko.yamaneko_back_end.dto.character.CharacterRequestDTO
+import org.yamaneko.yamaneko_back_end.dto.character.CharacterRequestPatch
 import org.yamaneko.yamaneko_back_end.entity.Character
 import org.yamaneko.yamaneko_back_end.mappers.CharacterMapper
 import org.yamaneko.yamaneko_back_end.repository.CharacterRepository
@@ -51,6 +52,18 @@ class CharacterServiceImpl: CharacterService {
 
     override fun getCharacterById( id: Long ): CharacterDTO? {
         val character = characterRepository.findById( id ).get()
+
+        return characterMapper.toDTO( character )
+    }
+
+    override fun updateCharacter( request: CharacterRequestPatch, characterId: Long ): CharacterDTO {
+        val character = characterRepository.findById( characterId ).orElseThrow { NoSuchElementException( "Character with id $characterId does not exist" ) }
+
+        request.originalName?.let { character.originalName = it }
+        request.translatedName?.let { character.translatedName = it }
+        request.image?.let { character.image = it }
+
+        characterRepository.save( character )
 
         return characterMapper.toDTO( character )
     }

@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.yamaneko.yamaneko_back_end.dto.RolesDTO
 import org.yamaneko.yamaneko_back_end.dto.release.ReleaseDTO
+import org.yamaneko.yamaneko_back_end.dto.release.ReleaseRequestPatch
 import org.yamaneko.yamaneko_back_end.dto.release.ReleaseRequestPost
 import org.yamaneko.yamaneko_back_end.entity.Release
 import org.yamaneko.yamaneko_back_end.mappers.ReleaseMapper
@@ -119,5 +120,21 @@ class ReleaseServiceImpl: ReleaseService {
         val response = releases.map{ releaseMapper.toDTO( it ) }
 
         return ResponseEntity.status( HttpStatus.OK ).body( response )
+    }
+
+    override fun updateRelease(request: ReleaseRequestPatch, releaseId: Long ): ReleaseDTO {
+        val release = releaseRepository.findById( releaseId ).orElseThrow { NoSuchElementException("Release not found") }
+
+        request.originalName?.let{ release.originalName = it }
+        request.translatedName?.let{ release.translatedName = it }
+        request.posterImageUrl?.let{ release.previewVideoUrl = it }
+        request.previewImageUrl?.let{ release.previewVideoUrl = it }
+        request.videoUrl?.let{ release.videoUrl = it }
+        request.synopsis?.let{ release.sinopsis = it }
+        request.info?.let{ release.info = it }
+
+        releaseRepository.save( release )
+
+        return releaseMapper.toDTO( release )
     }
 }
