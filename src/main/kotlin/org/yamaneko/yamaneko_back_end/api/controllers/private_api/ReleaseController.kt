@@ -6,19 +6,29 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.responses.ApiResponse
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
+import org.springframework.http.*
 import org.springframework.web.bind.annotation.*
 import org.yamaneko.yamaneko_back_end.dto.ErrorResponse
+import org.yamaneko.yamaneko_back_end.dto.bot_dto.BotRequestDTO
 import org.yamaneko.yamaneko_back_end.dto.release.ReleaseDTO
+import org.yamaneko.yamaneko_back_end.dto.release.ReleaseRequestPatch
 import org.yamaneko.yamaneko_back_end.dto.release.ReleaseRequestPost
+import org.yamaneko.yamaneko_back_end.repository.ReleaseRepository
+import org.yamaneko.yamaneko_back_end.service.discord_bot.BotService
 import org.yamaneko.yamaneko_back_end.service.release.ReleaseService
+import org.yamaneko.yamaneko_back_end.utils.AuthenticatedUserData
 
 @RestController
 @RequestMapping("/api/releases/v1" )
-class ReleaseController( @Autowired private val releaseService: ReleaseService ) {
+class ReleaseController(
+    private val releaseService: ReleaseService,
+    private val botService: BotService,
+    private val releaseRepository: ReleaseRepository
+) {
+
+    private val userData = AuthenticatedUserData()
 
     @Operation( summary = "Get all releases from DB." )
     @GetMapping("")
@@ -148,8 +158,18 @@ class ReleaseController( @Autowired private val releaseService: ReleaseService )
             ),
         ]
     )
-    fun saveRelease( @Valid @RequestBody request: ReleaseRequestPost ): ResponseEntity<ReleaseDTO>{
+    fun saveRelease( @Valid @RequestBody request: ReleaseRequestPost, httpRequest: HttpServletRequest ): ResponseEntity<ReleaseDTO>{
         val response = releaseService.createRelease( request )
+        val botNotificationBody = BotRequestDTO(
+            id = response.id,
+            name = request.translatedName,
+            timestamp = response.uploadedAt,
+
+            user = userData.getAuthenticatedUser(),
+            address = userData.getClientIpAddress( httpRequest ),
+            method = httpRequest.method,
+        )
+        botService.createReleaseNotification( botNotificationBody )
 
         return ResponseEntity.status( HttpStatus.CREATED ).body( response )
     }
@@ -182,5 +202,27 @@ class ReleaseController( @Autowired private val releaseService: ReleaseService )
             ResponseEntity.ok().build()
         else
             ResponseEntity.notFound().build()
+    }
+
+    @Operation( summary = "Update release." )
+    @PatchMapping("/{releaseId}")
+    fun patchRelease(@RequestBody request: ReleaseRequestPatch, @PathVariable releaseId: Long, httpRequest: HttpServletRequest ): ResponseEntity<Any>{
+        val releaseName = releaseRepository.findReleaseById( releaseId )?.translatedName
+
+        val updatedRelease = releaseService.updateRelease( request, releaseId )
+
+        val botNotificationBody = BotRequestDTO(
+            id = updatedRelease.id,
+            name = releaseName,
+            timestamp = updatedRelease.uploadedAt,
+
+            user = userData.getAuthenticatedUser(),
+            address = userData.getClientIpAddress( httpRequest ),
+            method = httpRequest.method,
+        )
+        botService.createReleaseNotification( botNotificationBody )
+
+
+        return ResponseEntity.ok().build( )
     }
 }

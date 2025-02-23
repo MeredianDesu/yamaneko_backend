@@ -6,20 +6,21 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.yamaneko.yamaneko_back_end.entity.User
 
 class CustomUserDetails( private val user: User ): UserDetails {
-    override fun getAuthorities(): Collection<GrantedAuthority?>? {
+    override fun getAuthorities(): Collection<GrantedAuthority?> {
         val authorities = user.roles.map { role -> SimpleGrantedAuthority( role ) }
 
         return authorities
     }
 
-    override fun getPassword(): String? {
+    override fun getPassword(): String {
 
         return user.password
     }
 
-    override fun getUsername(): String? {
+    override fun getUsername(): String {
 
-        return user.username
+        return user.email
+      /* return user.username */
     }
 
 }
