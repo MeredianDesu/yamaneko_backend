@@ -7,7 +7,7 @@ import org.yamaneko.yamaneko_back_end.dto.bot_dto.BotRequestDTO
 
 @Service
 class BotServiceImp: BotService {
-    private val botApi = "http://localhost:8080/webhook/"
+    private val botApi = "http://localhost:8081/webhook"
     private val restTemplate = RestTemplate()
     private val headers = HttpHeaders().apply {
         contentType = MediaType.APPLICATION_JSON
