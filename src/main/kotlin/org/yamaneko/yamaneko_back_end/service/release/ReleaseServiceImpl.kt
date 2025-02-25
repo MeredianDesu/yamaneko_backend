@@ -2,6 +2,7 @@ package org.yamaneko.yamaneko_back_end.service.release
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
@@ -39,7 +40,7 @@ class ReleaseServiceImpl: ReleaseService {
     private val releaseMapper = ReleaseMapper()
 
     override fun getAllReleases(): List<ReleaseDTO> {
-        val releases = releaseRepository.findAll()
+        val releases = releaseRepository.findAll(Sort.by(Sort.Direction.ASC, "id"))
 
         return releases.map{ releaseMapper.toDTO( it ) }
     }
@@ -127,7 +128,7 @@ class ReleaseServiceImpl: ReleaseService {
 
         request.originalName?.let{ release.originalName = it }
         request.translatedName?.let{ release.translatedName = it }
-        request.posterImageUrl?.let{ release.previewVideoUrl = it }
+        request.posterImageUrl?.let{ release.posterImageUrl = it }
         request.previewImageUrl?.let{ release.previewVideoUrl = it }
         request.videoUrl?.let{ release.videoUrl = it }
         request.synopsis?.let{ release.sinopsis = it }
