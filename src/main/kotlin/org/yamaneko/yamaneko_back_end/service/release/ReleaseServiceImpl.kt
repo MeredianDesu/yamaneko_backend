@@ -16,8 +16,8 @@ import org.yamaneko.yamaneko_back_end.repository.CharacterRepository
 import org.yamaneko.yamaneko_back_end.repository.GenreRepository
 import org.yamaneko.yamaneko_back_end.repository.ReleaseRepository
 import org.yamaneko.yamaneko_back_end.repository.TeamRepository
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import org.yamaneko.yamaneko_back_end.utils.DateFormatter
+import java.util.Date
 
 @Service
 class ReleaseServiceImpl: ReleaseService {
@@ -38,6 +38,8 @@ class ReleaseServiceImpl: ReleaseService {
     private lateinit var filesServerUrl: String
 
     private val releaseMapper = ReleaseMapper()
+
+    private val dateFormatter = DateFormatter()
 
     override fun getAllReleases(): List<ReleaseDTO> {
         val releases = releaseRepository.findAll(Sort.by(Sort.Direction.ASC, "id"))
@@ -60,9 +62,7 @@ class ReleaseServiceImpl: ReleaseService {
     }
 
     override fun createRelease( request: ReleaseRequestPost ): ReleaseDTO {
-        val currentDate = LocalDateTime.now()
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-        val date = currentDate.format( formatter )
+        val date = dateFormatter.dateToString( Date() )
 
         val genresId = request.genres
         val genresList = genreRepository.findAllById( genresId )
