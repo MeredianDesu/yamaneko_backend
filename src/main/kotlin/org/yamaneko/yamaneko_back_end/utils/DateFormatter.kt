@@ -9,7 +9,7 @@ import java.util.*
 @Component
 class DateFormatter {
 
-    private final val pattern = "yyyy-MM-dd HH:mm:ss"
+    private final val pattern = "dd/MM/yyyy HH:mm:ss"
     val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern( pattern )
 
     fun dateToString( date: Date ): String {
