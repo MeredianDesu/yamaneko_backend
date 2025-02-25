@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param
 import org.yamaneko.yamaneko_back_end.entity.RefreshToken
 
 interface UserRefreshTokensRepository: JpaRepository<RefreshToken, Long>{
-    @Query( "FROM RefreshToken a WHERE a.user.id = :userId AND TO_TIMESTAMP( a.expiresAt, 'DD/MM/YYYY HH24:MI:SS' ) > CURRENT_TIMESTAMP" )
+    @Query( "FROM RefreshToken a WHERE a.user.id = :userId AND TO_TIMESTAMP( a.expiresAt, 'DD-MM-YYYY HH24:MI:SS' ) > CURRENT_TIMESTAMP" )
     fun findByUser(@Param( "userId" ) userId: Long ): RefreshToken?
 
     @Modifying
