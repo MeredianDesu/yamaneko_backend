@@ -9,6 +9,7 @@ import java.util.*
 @Component
 class DateFormatter {
 
+    // Если снова не заработает: поменять формат
     private final val pattern = "dd/MM/yyyy HH:mm:ss"
     val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern( pattern )
 
