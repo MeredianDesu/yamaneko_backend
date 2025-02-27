@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import org.springframework.http.*
@@ -20,6 +21,7 @@ import org.yamaneko.yamaneko_back_end.service.discord_bot.BotService
 import org.yamaneko.yamaneko_back_end.service.release.ReleaseService
 import org.yamaneko.yamaneko_back_end.utils.AuthenticatedUserData
 
+@Tag(name = "{ v1 } Releases API")
 @RestController
 @RequestMapping("/api/releases/v1" )
 class ReleaseController(

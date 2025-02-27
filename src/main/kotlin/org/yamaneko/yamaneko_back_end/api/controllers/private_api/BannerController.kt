@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -24,6 +25,7 @@ import org.yamaneko.yamaneko_back_end.service.banner.BannerService
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+@Tag(name = "{ v1 } Banners API")
 @RestController
 @RequestMapping( "api/banners/v1" )
 class BannerController(

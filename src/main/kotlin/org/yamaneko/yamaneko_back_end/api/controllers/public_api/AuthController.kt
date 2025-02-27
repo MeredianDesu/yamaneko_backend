@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -23,6 +24,7 @@ import org.yamaneko.yamaneko_back_end.repository.UserRepository
 import org.yamaneko.yamaneko_back_end.repository.UserTokensRepository
 import org.yamaneko.yamaneko_back_end.service.user.UserService
 
+@Tag(name = "{ v1 } Auth API")
 @RestController
 @RequestMapping("/api/auth/v1/")
 class AuthController(
@@ -55,18 +57,19 @@ class AuthController(
     fun authUser( @Schema( type = "" ) @Valid @RequestBody request: UserAuthRequest ): ResponseEntity<Any>{
         val status = userService.authUser( request )
 
-        if( status.statusCode == HttpStatus.NOT_FOUND )
-            return ResponseEntity.status( HttpStatus.NOT_FOUND ).body( status.body )
-        if( status.statusCode == HttpStatus.UNAUTHORIZED )
-            return ResponseEntity.status( HttpStatus.UNAUTHORIZED ).body( status.body )
+        when( status.statusCode ){
+            HttpStatus.NOT_FOUND -> return ResponseEntity.notFound().build()
+            HttpStatus.UNAUTHORIZED -> return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+            else -> {
+                val tokens = status.body?.split( '|' )
 
-        val tokens = status.body?.split( '|' )
+                val response = UserAuthResponse(
+                    accessToken = tokens?.get( 0 ),
+                )
 
-        val response = UserAuthResponse(
-            accessToken = tokens?.get( 0 ),
-        )
-
-        return ResponseEntity.status( HttpStatus.OK ).body( response )
+                return ResponseEntity.status( HttpStatus.OK ).body( response )
+            }
+        }
     }
 
     @Operation( summary = "Create a new user." )

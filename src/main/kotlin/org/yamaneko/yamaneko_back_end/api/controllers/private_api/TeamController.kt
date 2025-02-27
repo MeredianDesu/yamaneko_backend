@@ -2,6 +2,7 @@ package org.yamaneko.yamaneko_back_end.api.controllers.private_api
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -10,6 +11,7 @@ import org.yamaneko.yamaneko_back_end.dto.team.TeamDTO
 import org.yamaneko.yamaneko_back_end.dto.team.TeamRequestDTO
 import org.yamaneko.yamaneko_back_end.service.team.TeamService
 
+@Tag(name = "{ v1 } Team API")
 @RestController
 @RequestMapping( "/api/team/v1" )
 class TeamController(
