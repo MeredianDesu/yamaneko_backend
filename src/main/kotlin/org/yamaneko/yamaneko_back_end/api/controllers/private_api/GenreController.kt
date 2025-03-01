@@ -28,7 +28,7 @@ class GenreController(
         val genresList = genreService.getAllGenres()
 
         return if( genresList.isEmpty() )
-            ResponseEntity.status( HttpStatus.NOT_FOUND ).build()
+            ResponseEntity.status( HttpStatus.NO_CONTENT ).build()
         else
             ResponseEntity.status( HttpStatus.OK ).body( genresList )
     }

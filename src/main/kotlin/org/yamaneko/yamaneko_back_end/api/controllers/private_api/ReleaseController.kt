@@ -61,7 +61,7 @@ class ReleaseController(
         return if( releases.isNotEmpty() )
             ResponseEntity.status( HttpStatus.OK ).body( releases )
         else
-            ResponseEntity.noContent().build()
+            ResponseEntity.status( HttpStatus.NO_CONTENT ).build()
     }
 
     @Operation( summary = "Get release by ID.")

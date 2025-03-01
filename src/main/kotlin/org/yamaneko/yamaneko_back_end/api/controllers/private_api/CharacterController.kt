@@ -67,7 +67,7 @@ class CharacterController(
         return if( characterList.isEmpty() )
             ResponseEntity.status( HttpStatus.NO_CONTENT ).build()
         else
-            ResponseEntity.ok( characterList )
+            ResponseEntity.status( HttpStatus.OK ).body( characterList )
     }
 
     @Operation( summary = "Get character by ID.")
