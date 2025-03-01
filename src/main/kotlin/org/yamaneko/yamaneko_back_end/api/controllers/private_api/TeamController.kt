@@ -20,9 +20,15 @@ class TeamController(
 
     @Operation( summary = "Get all teams from DB." )
     @GetMapping("")
-    fun getAllTeams(): List<TeamDTO>{
+    fun getAllTeams(): ResponseEntity<List<TeamDTO>>{
+        val dubbers = teamService.getTeamList()
 
-        return teamService.getTeamList()
+        return if( dubbers.isEmpty() ){
+            ResponseEntity.status( HttpStatus.NO_CONTENT ).build()
+        }
+        else{
+            ResponseEntity.status( HttpStatus.OK ).body( dubbers )
+        }
     }
 
     @Operation( summary = "Get member by ID." )

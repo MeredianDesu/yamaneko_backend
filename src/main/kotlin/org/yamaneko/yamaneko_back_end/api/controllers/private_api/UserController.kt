@@ -54,9 +54,15 @@ class UserController(
             ),
         ]
     )
-    fun getUsers(): List<UserDTO> {
+    fun getUsers(): ResponseEntity<List<UserDTO>> {
+        val users = userService.getAllUsers()
 
-        return userService.getAllUsers()
+        return if( users.isEmpty() ){
+            ResponseEntity.status( HttpStatus.NO_CONTENT ).build()
+        }
+        else{
+            ResponseEntity.status( HttpStatus.OK ).body( users )
+        }
     }
 
     @Operation( summary = "Get user by JWT." )
