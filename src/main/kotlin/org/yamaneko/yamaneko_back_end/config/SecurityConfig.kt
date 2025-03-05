@@ -56,7 +56,8 @@ class SecurityConfig(
                     ).permitAll()
                     .requestMatchers(
                         "/api/auth/**",
-                        "/files/"
+                        "/files/",
+                        "/api/files/**",
                     ).permitAll()
                 /* Временно убираем аутентификацию */
                     authorizeHttpRequests

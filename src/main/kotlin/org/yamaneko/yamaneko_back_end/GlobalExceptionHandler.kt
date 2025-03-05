@@ -7,6 +7,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.yamaneko.yamaneko_back_end.dto.ErrorResponse
+import software.amazon.awssdk.core.exception.SdkClientException
 
 @ControllerAdvice
 class GlobalExceptionHandler {
@@ -47,6 +48,18 @@ class GlobalExceptionHandler {
         )
 
         return ResponseEntity( errorResponse, HttpStatus.NOT_FOUND )
+    }
+
+    // AWS SDK Exception handler
+    @ExceptionHandler( SdkClientException::class )
+    fun handleSdkClientException( ex: SdkClientException ): ResponseEntity<ErrorResponse> {
+        val errors = ex.message
+        val errorResponse = ErrorResponse(
+            error = "AWS SDK Client Error",
+            message = mapOf( "details" to errors )
+        )
+
+        return ResponseEntity( errorResponse, HttpStatus.UNPROCESSABLE_ENTITY )
     }
 
 }
