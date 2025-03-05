@@ -52,6 +52,24 @@ jobs:
       - name: Update master password
         run: sed -i 's|<master_password>|${{ secrets.MASTER_PASSWORD }}|' src/main/resources/application-prod.properties
 
+      - name: Update cloud region
+        run: sed -i 's|<cloud_region>|${{ secrets.CLOUD_REGION }}|' src/main/resources/application-prod.properties
+
+      - name: Update cloud endpoint
+        run: sed -i 's|<cloud_access_key>|${{ secrets.CLOUD_ENDPOINT }}|' src/main/resources/application-prod.properties
+
+      - name: Update cloud cdn
+        run: sed -i 's|<cloud_access_key>|${{ secrets.CLOUD_CDN }}|' src/main/resources/application-prod.properties
+
+      - name: Update cloud access key
+        run: sed -i 's|<cloud_access_key>|${{ secrets.CLOUD_BUCKET_NAME }}|' src/main/resources/application-prod.properties
+
+      - name: Update cloud access key
+        run: sed -i 's|<cloud_access_key>|${{ secrets.CLOUD_ACCESS_KEY }}|' src/main/resources/application-prod.properties
+
+      - name: Update cloud secret key
+        run: sed -i 's|<cloud_secret_key>|${{ secrets.CLOUD_SECRET_KEY }}|' src/main/resources/application-prod.properties
+
       # Build Maven project
       - name: Build with Maven
         run: mvn clean package -Dmaven.test.skip=true
