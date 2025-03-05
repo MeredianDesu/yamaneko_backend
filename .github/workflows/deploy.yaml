@@ -56,13 +56,13 @@ jobs:
         run: sed -i 's|<cloud_region>|${{ secrets.CLOUD_REGION }}|' src/main/resources/application-prod.properties
 
       - name: Update cloud endpoint
-        run: sed -i 's|<cloud_access_key>|${{ secrets.CLOUD_ENDPOINT }}|' src/main/resources/application-prod.properties
+        run: sed -i 's|<cloud_endpoint>|${{ secrets.CLOUD_ENDPOINT }}|' src/main/resources/application-prod.properties
 
       - name: Update cloud cdn
-        run: sed -i 's|<cloud_access_key>|${{ secrets.CLOUD_CDN }}|' src/main/resources/application-prod.properties
+        run: sed -i 's|<cloud_cdn>|${{ secrets.CLOUD_CDN }}|' src/main/resources/application-prod.properties
 
-      - name: Update cloud access key
-        run: sed -i 's|<cloud_access_key>|${{ secrets.CLOUD_BUCKET_NAME }}|' src/main/resources/application-prod.properties
+      - name: Update cloud bucket name
+        run: sed -i 's|<cloud_bucket_name>|${{ secrets.CLOUD_BUCKET_NAME }}|' src/main/resources/application-prod.properties
 
       - name: Update cloud access key
         run: sed -i 's|<cloud_access_key>|${{ secrets.CLOUD_ACCESS_KEY }}|' src/main/resources/application-prod.properties
