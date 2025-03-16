@@ -1,4 +1,4 @@
-package org.yamaneko.yamaneko_back_end.config
+package org.yamaneko.yamaneko_back_end.config.converters
 
 import jakarta.persistence.AttributeConverter
 import jakarta.persistence.Converter

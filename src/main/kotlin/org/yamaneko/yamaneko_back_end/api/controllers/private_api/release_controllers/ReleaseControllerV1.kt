@@ -1,4 +1,4 @@
-package org.yamaneko.yamaneko_back_end.api.controllers.private_api
+package org.yamaneko.yamaneko_back_end.api.controllers.private_api.release_controllers
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -24,7 +24,8 @@ import org.yamaneko.yamaneko_back_end.utils.AuthenticatedUserData
 @Tag(name = "{ v1 } Releases API")
 @RestController
 @RequestMapping("/api/releases/v1" )
-class ReleaseController(
+@Deprecated( message = "Old controller" )
+class ReleaseControllerV1(
     private val releaseService: ReleaseService,
     private val botService: BotService,
     private val releaseRepository: ReleaseRepository
@@ -61,7 +62,7 @@ class ReleaseController(
         return if( releases.isNotEmpty() )
             ResponseEntity.status( HttpStatus.OK ).body( releases )
         else
-            ResponseEntity.status( HttpStatus.NO_CONTENT ).build()
+            ResponseEntity.status( HttpStatus.NOT_FOUND ).build()
     }
 
     @Operation( summary = "Get release by ID.")

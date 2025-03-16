@@ -1,7 +1,7 @@
 package org.yamaneko.yamaneko_back_end.entity
 
 import jakarta.persistence.*
-import org.yamaneko.yamaneko_back_end.config.StringSetConverter
+import org.yamaneko.yamaneko_back_end.config.converters.StringSetConverter
 
 @Entity
 @Table( name = "users" )

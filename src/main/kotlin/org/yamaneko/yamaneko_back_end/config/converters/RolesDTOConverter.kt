@@ -1,4 +1,4 @@
-package org.yamaneko.yamaneko_back_end.config
+package org.yamaneko.yamaneko_back_end.config.converters
 
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -15,7 +15,7 @@ class RolesDTOConverter : AttributeConverter<MutableList<RolesDTO>, String> {
         return try {
             // Convert to JSON and log the output for debugging
             val json = objectMapper.writeValueAsString(attribute)
-            println("Converted roles to JSON: $json") // Log the JSON string
+//            println("Converted roles to JSON: $json") // Log the JSON string
             json
         } catch (e: JsonProcessingException) {
             // Handle exception and log the error
@@ -25,7 +25,7 @@ class RolesDTOConverter : AttributeConverter<MutableList<RolesDTO>, String> {
     }
 
     override fun convertToEntityAttribute(dbData: String?): MutableList<RolesDTO> {
-        println("DB Data for roles: $dbData") // Log the data retrieved from the database
+//        println("DB Data for roles: $dbData") // Log the data retrieved from the database
         return if (dbData.isNullOrEmpty()) {
             mutableListOf()
         } else {
