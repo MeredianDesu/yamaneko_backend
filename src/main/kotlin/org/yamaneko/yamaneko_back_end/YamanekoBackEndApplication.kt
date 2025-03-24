@@ -10,17 +10,12 @@ class YamanekoBackEndApplication: SpringBootServletInitializer() {}
 
 @OptIn(ExperimentalStdlibApi::class)
 fun String.md5(): String {
-    val md = MessageDigest.getInstance("MD5")
-    val digest = md.digest( this.toByteArray() )
-
-    return digest.toHexString()
+  val md = MessageDigest.getInstance("MD5")
+  val digest = md.digest(this.toByteArray())
+  
+  return digest.toHexString()
 }
 
 fun main(args: Array<String>) {
-    runApplication<YamanekoBackEndApplication>(*args)
+  runApplication<YamanekoBackEndApplication>(*args)
 }
-
-//@Override
-//fun configure( application: SpringApplicationBuilder ): SpringApplicationBuilder {
-//    return application.sources( YamanekoBackEndApplication::class.java )
-//}
