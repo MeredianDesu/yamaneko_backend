@@ -29,50 +29,49 @@ class SecurityConfig(
     http.csrf { csrf ->
       csrf.disable()
     }.cors {
-        it.configurationSource(corsConfigurationSource())
-      }.formLogin { formLogin ->
-        formLogin.loginPage("/login")
-        formLogin.defaultSuccessUrl("/docs", true)
-        formLogin.permitAll()
-      }.authorizeHttpRequests { authorizeHttpRequests ->
-        authorizeHttpRequests.requestMatchers(
-            HttpMethod.OPTIONS, "/api/**" // добавление этого параметра зафиксило cors на React
-          ).permitAll().requestMatchers(
-            "/login",                // Доступ к странице логина
-            "/swagger-ui/**",        // Swagger UI
-            "/v3/api-docs/**",       // OpenAPI спецификации
-            "/swagger-resources/**", // Ресурсы Swagger
-            "/webjars/**",           // Webjars (CSS/JS)
-            "/docs"                  // Ваш кастомный маршрут для Swagger
-          ).permitAll().requestMatchers(
-            "/api/auth/**",
-//                        "/files/",
-//                        "/api/files/**",
-          ).permitAll()
-        authorizeHttpRequests.requestMatchers(
-            "/api/users/**", "/api/news/**", "/api/genres/**", "/api/banners/**", "/api/characters/**", "/api/team/**"
-          ).hasAuthority("ADMIN")
-      }.exceptionHandling { exceptionHandling ->
-        exceptionHandling.authenticationEntryPoint { request, response, authException ->
-            val contentTypeHeader = request.getHeader("Accept")
-            if(request.requestURI.startsWith("/login")) {
-              response.sendRedirect("/login")
-            }
-            if(contentTypeHeader != null && contentTypeHeader.contains("application/json")) {
-              response.contentType = "application/json"
-              response.status = HttpServletResponse.SC_UNAUTHORIZED
-              response.writer.write(
-                """{"error": "Unauthorized", "message": "${authException.message}"}"""
-              )
-            } else {
-              response.sendError(HttpServletResponse.SC_UNAUTHORIZED)
-            }
-          }
-      }.sessionManagement { sessionManagement ->
-        sessionManagement.sessionConcurrency { sessionConcurrency ->
-            sessionConcurrency.maximumSessions(1).expiredUrl("/login?expired")
-          }
-      }.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter::class.java)
+      it.configurationSource(corsConfigurationSource())
+    }.formLogin { formLogin ->
+      formLogin.loginPage("/login")
+      formLogin.defaultSuccessUrl("/docs", true)
+      formLogin.permitAll()
+    }.authorizeHttpRequests { authorizeHttpRequests ->
+      authorizeHttpRequests.requestMatchers(
+        HttpMethod.OPTIONS, "/api/**" // добавление этого параметра зафиксило cors на React
+      ).permitAll().requestMatchers(
+        "/login",                // Доступ к странице логина
+        "/swagger-ui/**",        // Swagger UI
+        "/v3/api-docs/**",       // OpenAPI спецификации
+        "/swagger-resources/**", // Ресурсы Swagger
+        "/webjars/**",           // Webjars (CSS/JS)
+        "/docs"                  // Ваш кастомный маршрут для Swagger
+      ).permitAll().requestMatchers(
+        "/api/auth/**",
+        "/api/releases/**",
+      ).permitAll()
+      authorizeHttpRequests.requestMatchers(
+        "/api/users/**", "/api/news/**", "/api/genres/**", "/api/banners/**", "/api/characters/**", "/api/team/**"
+      ).hasAuthority("ADMIN")
+    }.exceptionHandling { exceptionHandling ->
+      exceptionHandling.authenticationEntryPoint { request, response, authException ->
+        val contentTypeHeader = request.getHeader("Accept")
+        if(request.requestURI.startsWith("/login")) {
+          response.sendRedirect("/login")
+        }
+        if(contentTypeHeader != null && contentTypeHeader.contains("application/json")) {
+          response.contentType = "application/json"
+          response.status = HttpServletResponse.SC_UNAUTHORIZED
+          response.writer.write(
+            """{"error": "Unauthorized", "message": "${authException.message}"}"""
+          )
+        } else {
+          response.sendError(HttpServletResponse.SC_UNAUTHORIZED)
+        }
+      }
+    }.sessionManagement { sessionManagement ->
+      sessionManagement.sessionConcurrency { sessionConcurrency ->
+        sessionConcurrency.maximumSessions(1).expiredUrl("/login?expired")
+      }
+    }.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter::class.java)
     
     return http.build()
   }
@@ -125,18 +124,11 @@ class SecurityConfig(
   fun corsConfigurationSource(): CorsConfigurationSource {
     val configuration = CorsConfiguration()
     configuration.allowedOrigins = listOf(
-      "https://yamaneko.isn.one",
-      "http://localhost:5173/",
-      "http://localhost:8080/",
-      "https://admin.yamaneko.isn.one/"
+      "https://yamaneko.isn.one", "http://localhost:5173/", "http://localhost:8080/", "https://admin.yamaneko.isn.one/"
     )
     configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
     configuration.allowedHeaders = listOf(
-      "Authorization",
-      "Access-Control-Allow-Origin",
-      "Access-Control-Allow-Headers",
-      "Content-Type",
-      "X-Requested-With"
+      "Authorization", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Content-Type", "X-Requested-With"
     )
     configuration.allowCredentials = true
     
