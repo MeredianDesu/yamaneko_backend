@@ -45,8 +45,7 @@ class SecurityConfig(
         "/webjars/**",           // Webjars (CSS/JS)
         "/docs"                  // Ваш кастомный маршрут для Swagger
       ).permitAll().requestMatchers(
-        "/api/auth/**",
-        "/api/releases/**",
+        "/api/auth/**", "/api/releases/**", "/api/users/**"
       ).permitAll()
       authorizeHttpRequests.requestMatchers(
         "/api/users/**", "/api/news/**", "/api/genres/**", "/api/banners/**", "/api/characters/**", "/api/team/**"
