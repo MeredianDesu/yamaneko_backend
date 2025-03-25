@@ -8,7 +8,7 @@ import org.yamaneko.yamaneko_back_end.entity.UserToken
 
 interface UserTokensRepository: JpaRepository<UserToken, Long> {
   
-  @Query("SELECT a FROM UserToken a WHERE a.jwtToken = :jwtToken LIMIT 1", nativeQuery = true)
+  @Query(value = "SELECT * FROM user_tokens WHERE jwt_token = :jwtToken LIMIT 1", nativeQuery = true)
   fun findByToken(@Param("jwtToken") jwtToken: String): UserToken?
   
   
