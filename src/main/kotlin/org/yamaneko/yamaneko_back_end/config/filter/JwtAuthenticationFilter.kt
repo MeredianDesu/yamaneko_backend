@@ -15,41 +15,56 @@ import org.yamaneko.yamaneko_back_end.utils.JwtUtil
 
 @Component
 class JwtAuthenticationFilter: OncePerRequestFilter() {
-    @Autowired private lateinit var jwtUtil: JwtUtil
-    @Autowired private lateinit var customUserDetailsService: CustomUserDetailsService
-
-    @Throws( ServletException::class )
-    override fun doFilterInternal(
-        request: HttpServletRequest,
-        response: HttpServletResponse,
-        filterChain: FilterChain
-    ) {
-        val authHeader = request.getHeader( "Authorization" )
-        var id: String? = null
-        var jwt: String? = null
-
-        if ( authHeader != null && authHeader.startsWith( "Bearer " ) ) {
-            jwt = authHeader.substring( 7 )
-            id = jwtUtil.extractUserId( jwt )
-        }
-
-        // Ensure JWT is not null and userID is extracted
-        if ( id != null && jwt != null && SecurityContextHolder.getContext().authentication == null) {
-            if ( jwtUtil.validateToken ( jwt, id ) ) {
-                val userDetails = customUserDetailsService.loadUserByUsername( id )
-                if( userDetails != null ) {
-                    val authentication = UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.authorities
-                    )
-                    authentication.details = WebAuthenticationDetailsSource().buildDetails( request )
-                    SecurityContextHolder.getContext().authentication = authentication
-                }
-            }
-        }
-//        println("JWT: $jwt")
-        request.setAttribute( "AuthorizationToken", jwt )
-        filterChain.doFilter( request, response )
+  @Autowired
+  private lateinit var jwtUtil: JwtUtil
+  
+  @Autowired
+  private lateinit var customUserDetailsService: CustomUserDetailsService
+  
+  @Throws(ServletException::class)
+  override fun doFilterInternal(
+    request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
+    val authHeader = request.getHeader("Authorization")
+    
+    // Если заголовка нет или он не начинается с Bearer, просто продолжаем цепочку фильтров
+    if(authHeader.isNullOrBlank() || ! authHeader.startsWith("Bearer ")) {
+      filterChain.doFilter(request, response)
+      return
     }
+    
+    val jwt = authHeader.removePrefix("Bearer ").trim()
+    
+    request.setAttribute("AuthorizationToken", jwt)
+    
+    val id: String? = try {
+      jwtUtil.extractUserId(jwt)
+    } catch(e: Exception) {
+      filterChain.doFilter(request, response)
+      return
+    }
+    
+    if(id == null || SecurityContextHolder.getContext().authentication != null) {
+      filterChain.doFilter(request, response)
+      return
+    }
+    
+    // Если токен невалиден, прерываем обработку
+    if(! jwtUtil.validateToken(jwt, id)) {
+      filterChain.doFilter(request, response)
+      return
+    }
+    
+    val userDetails = customUserDetailsService.loadUserByUsername(id) ?: run {
+      filterChain.doFilter(request, response)
+      return
+    }
+    
+    val authentication = UsernamePasswordAuthenticationToken(
+      userDetails, null, userDetails.authorities
+    )
+    authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
+    SecurityContextHolder.getContext().authentication = authentication
+    
+    filterChain.doFilter(request, response)
+  }
 }
