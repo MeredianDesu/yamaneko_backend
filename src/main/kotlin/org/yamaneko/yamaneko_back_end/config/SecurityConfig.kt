@@ -44,12 +44,13 @@ class SecurityConfig(
         "/swagger-resources/**", // Ресурсы Swagger
         "/webjars/**",           // Webjars (CSS/JS)
         "/docs"                  // Ваш кастомный маршрут для Swagger
-      ).permitAll().requestMatchers(
-        "/api/auth/**", "/api/releases/**", "/api/users/**"
       ).permitAll()
       authorizeHttpRequests.requestMatchers(
-        "/api/users/**", "/api/news/**", "/api/genres/**", "/api/banners/**", "/api/characters/**", "/api/team/**"
-      ).hasAuthority("ADMIN")
+        "/api/**"
+      ).permitAll()
+//      authorizeHttpRequests.requestMatchers(
+//        "/api/news/**", "/api/genres/**", "/api/banners/**", "/api/characters/**", "/api/team/**"
+//      ).hasAuthority("ADMIN")
     }.exceptionHandling { exceptionHandling ->
       exceptionHandling.authenticationEntryPoint { request, response, authException ->
         val contentTypeHeader = request.getHeader("Accept")
