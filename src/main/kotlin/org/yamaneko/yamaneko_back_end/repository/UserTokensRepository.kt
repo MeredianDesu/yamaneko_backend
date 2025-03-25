@@ -6,12 +6,13 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.yamaneko.yamaneko_back_end.entity.UserToken
 
-interface UserTokensRepository: JpaRepository<UserToken, Long>{
-
-    @Query("FROM UserToken a WHERE a.jwtToken = :jwtToken")
-    fun findByToken(@Param( "jwtToken" ) jwtToken: String ): UserToken?
-
-    @Modifying
-    @Query("UPDATE UserToken a SET a.isRevoked = true WHERE a.jwtToken = :jwtToken")
-    fun disableToken( @Param( "jwtToken" ) jwtToken: String? )
+interface UserTokensRepository: JpaRepository<UserToken, Long> {
+  
+  @Query("SELECT a FROM UserToken a WHERE a.jwtToken = :jwtToken LIMIT 1", nativeQuery = true)
+  fun findByToken(@Param("jwtToken") jwtToken: String): UserToken?
+  
+  
+  @Modifying
+  @Query("UPDATE UserToken a SET a.isRevoked = true WHERE a.jwtToken = :jwtToken")
+  fun disableToken(@Param("jwtToken") jwtToken: String?)
 }
