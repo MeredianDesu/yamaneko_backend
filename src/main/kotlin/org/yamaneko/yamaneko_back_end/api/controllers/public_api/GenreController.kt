@@ -1,4 +1,4 @@
-package org.yamaneko.yamaneko_back_end.api.controllers.private_api
+package org.yamaneko.yamaneko_back_end.api.controllers.public_api
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -18,7 +18,8 @@ import org.yamaneko.yamaneko_back_end.service.genre.GenreService
 @RestController
 @RequestMapping("/api/genres/v1")
 class GenreController(
-  @Autowired private val genreService: GenreService, @Autowired private val genreRepository: GenreRepository) {
+  @Autowired private val genreService: GenreService, @Autowired private val genreRepository: GenreRepository
+) {
   
   @Operation(summary = "Get all genres form DB.")
   @GetMapping("")

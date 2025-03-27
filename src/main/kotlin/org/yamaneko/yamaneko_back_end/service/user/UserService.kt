@@ -7,8 +7,13 @@ import org.yamaneko.yamaneko_back_end.dto.user.UserRegistrationRequest
 import org.yamaneko.yamaneko_back_end.entity.User
 
 interface UserService {
-    fun getAllUsers(): List<UserDTO>
-    fun registerUser( request: UserRegistrationRequest ): ResponseEntity<String>
-    fun authUser( request: UserAuthRequest ): ResponseEntity<String>
-    fun generateAndSaveAccessToken( user: User): String
+  
+  fun getAllUsers(): List<UserDTO>
+  fun registerUser(request: UserRegistrationRequest): ResponseEntity<String>
+  fun authUser(request: UserAuthRequest): ResponseEntity<String>
+  fun generateAndSaveAccessToken(user: User): String
+  
+  //  fun findByUsername(username: String): Optional<User>
+//  fun existByUsername(username: String): Boolean
+//  fun existsByEmail(email: String): Boolean
 }

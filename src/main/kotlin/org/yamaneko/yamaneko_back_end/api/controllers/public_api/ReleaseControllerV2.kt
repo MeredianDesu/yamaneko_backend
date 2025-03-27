@@ -1,4 +1,4 @@
-package org.yamaneko.yamaneko_back_end.api.controllers.private_api.release_controllers
+package org.yamaneko.yamaneko_back_end.api.controllers.public_api
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -18,7 +18,6 @@ import org.yamaneko.yamaneko_back_end.dto.release.ReleaseRequestPatch
 import org.yamaneko.yamaneko_back_end.dto.release.ReleaseRequestPost
 import org.yamaneko.yamaneko_back_end.repository.ReleaseRepository
 import org.yamaneko.yamaneko_back_end.service.discord_bot.BotService
-import org.yamaneko.yamaneko_back_end.service.episode.EpisodeService
 import org.yamaneko.yamaneko_back_end.service.release.ReleaseService
 import org.yamaneko.yamaneko_back_end.utils.AuthenticatedUserData
 
@@ -29,8 +28,8 @@ class ReleaseControllerV2(
   private val releaseService: ReleaseService,
   private val botService: BotService,
   private val releaseRepository: ReleaseRepository,
-  private val episodesService: EpisodeService,
 ) {
+  
   private val userData = AuthenticatedUserData()
   
   @Operation(summary = "Get all releases from DB.")
@@ -46,9 +45,9 @@ class ReleaseControllerV2(
   )
   fun getReleases(
     @Parameter(
-      description = "Number of releases received.",
-      example = "4"
-    ) @RequestParam(required = false) length: Int?): ResponseEntity<List<ReleaseDTO>> {
+      description = "Number of releases received.", example = "4"
+    ) @RequestParam(required = false) length: Int?
+  ): ResponseEntity<List<ReleaseDTO>> {
     val releases = if(length != null) releaseService.getLatestReleases(length)
     else releaseService.getAllReleases()
     
@@ -69,9 +68,9 @@ class ReleaseControllerV2(
   )
   fun getReleaseById(
     @Parameter(
-      description = "ID of release.",
-      example = "1"
-    ) @PathVariable(required = true) releaseId: Long): ResponseEntity<ReleaseDTO> {
+      description = "ID of release.", example = "1"
+    ) @PathVariable(required = true) releaseId: Long
+  ): ResponseEntity<ReleaseDTO> {
     val release = releaseService.getReleaseById(releaseId)
     
     return if(release != null) ResponseEntity.status(HttpStatus.OK).body(release)
@@ -90,8 +89,8 @@ class ReleaseControllerV2(
     ]
   )
   fun saveRelease(
-    @Valid @RequestBody request: ReleaseRequestPost,
-    httpRequest: HttpServletRequest): ResponseEntity<ReleaseDTO> {
+    @Valid @RequestBody request: ReleaseRequestPost, httpRequest: HttpServletRequest
+  ): ResponseEntity<ReleaseDTO> {
     val response = releaseService.createRelease(request)
     
     val botNotificationBody = BotRequestDTO(
@@ -135,9 +134,8 @@ class ReleaseControllerV2(
   @Operation(summary = "Update release.")
   @PatchMapping("/{releaseId}")
   fun patchRelease(
-    @RequestBody request: ReleaseRequestPatch,
-    @PathVariable releaseId: Long,
-    httpRequest: HttpServletRequest): ResponseEntity<Any> {
+    @RequestBody request: ReleaseRequestPatch, @PathVariable releaseId: Long, httpRequest: HttpServletRequest
+  ): ResponseEntity<Any> {
     val releaseName = releaseRepository.findReleaseById(releaseId)?.translatedName
     
     val updatedRelease = releaseService.updateRelease(request, releaseId)
