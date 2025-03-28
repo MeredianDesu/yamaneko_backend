@@ -2,10 +2,7 @@ package org.yamaneko.yamaneko_back_end.api.controllers.public_api
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
-import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
-import io.swagger.v3.oas.annotations.responses.ApiResponse
-import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
@@ -27,24 +24,11 @@ class AuthController(
   @Autowired private val userService: UserService,
   @Autowired private val userRepository: UserRepository,
   private val userTokensRepository: UserTokensRepository,
-  private val userRefreshTokensRepository: UserRefreshTokensRepository) {
+  private val userRefreshTokensRepository: UserRefreshTokensRepository
+) {
+  
   @Operation(summary = "Auth user.")
   @PostMapping("/login")
-  @ApiResponses(
-    value = [ApiResponse(
-      responseCode = "200",
-      description = "Authorized",
-      content = [Content(mediaType = "application/json", schema = Schema(implementation = UserAuthResponse::class))]
-    ), ApiResponse(
-      responseCode = "401",
-      description = "Unauthorized",
-      content = [Content(mediaType = "text/plain", schema = Schema(type = "string", example = "Unauthorized"))]
-    ), ApiResponse(
-      responseCode = "404",
-      description = "User not found",
-      content = [Content(mediaType = "text/plain", schema = Schema(type = "string", example = "User not found"))]
-    )]
-  )
   fun authUser(@Schema(type = "") @Valid @RequestBody request: UserAuthRequest): ResponseEntity<Any> {
     val status = userService.authUser(request)
     
@@ -65,25 +49,6 @@ class AuthController(
   
   @Operation(summary = "Create a new user.")
   @PostMapping("/register")
-  @ApiResponses(
-    value = [
-      ApiResponse(
-        responseCode = "201",
-        description = "User created",
-        content = [Content(mediaType = "application/json", schema = Schema(implementation = UserAuthResponse::class))]
-      ),
-      ApiResponse(
-        responseCode = "400",
-        description = "Bad request",
-        content = [Content(mediaType = "text/plain", schema = Schema(type = "string", example = "Bad request"))]
-      ),
-      ApiResponse(
-        responseCode = "409",
-        description = "User already exists",
-        content = [Content(mediaType = "text/plain", schema = Schema(type = "string", example = "User already exists"))]
-      ),
-    ]
-  )
   fun createUser(@Valid @RequestBody request: UserRegistrationRequest): ResponseEntity<Any> {
     val status = userService.registerUser(request)
     
@@ -103,25 +68,6 @@ class AuthController(
   
   @Operation(summary = "Refresh access token")
   @PostMapping("/refresh")
-  @ApiResponses(
-    value = [
-      ApiResponse(
-        responseCode = "200",
-        description = "Token refreshed",
-        content = [Content(mediaType = "application/json", schema = Schema(implementation = UserAuthResponse::class))]
-      ),
-      ApiResponse(
-        responseCode = "400",
-        description = "Bad request",
-        content = [Content(mediaType = "text/plain", schema = Schema(type = "string", example = "Bad request"))]
-      ),
-      ApiResponse(
-        responseCode = "404", description = "User or refresh token not found", content = [Content(
-          mediaType = "text/plain", schema = Schema(type = "string", example = "User or refresh token not found")
-        )]
-      ),
-    ]
-  )
   fun refreshToken(@RequestAttribute("AuthorizationToken") @Parameter(description = "JWT token.") authHeader: String): ResponseEntity<Any> {
     var newAccessToken = authHeader.removePrefix("Bearer ").trim()
     val userIdByAccessToken =

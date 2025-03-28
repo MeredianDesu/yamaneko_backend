@@ -1,6 +1,5 @@
 package org.yamaneko.yamaneko_back_end
 
-import io.jsonwebtoken.ExpiredJwtException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
@@ -79,16 +78,4 @@ class GlobalExceptionHandler {
     
     return ResponseEntity(errorResponse, HttpStatus.UNPROCESSABLE_ENTITY)
   }
-  
-  // JWT Exception handler
-  @ExceptionHandler(ExpiredJwtException::class)
-  fun handleExpiredJwtException(ex: ExpiredJwtException): ResponseEntity<ErrorResponse> {
-    val errors = ex.message
-    val errorResponse = ErrorResponse(
-      error = "ExpiredJwtException", message = mapOf("details" to errors, "details" to "JWT expired")
-    )
-    
-    return ResponseEntity(errorResponse, HttpStatus.UNAUTHORIZED)
-  }
-  
 }
