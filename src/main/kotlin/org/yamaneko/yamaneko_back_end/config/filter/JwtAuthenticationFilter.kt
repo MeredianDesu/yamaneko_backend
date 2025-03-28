@@ -50,7 +50,7 @@ class JwtAuthenticationFilter: OncePerRequestFilter() {
       return
     }
     
-    if(request.requestURI.startsWith("/api/releases/")) {
+    if(request.requestURI.startsWith("/api/releases/") && request.method == "GET") {
       filterChain.doFilter(request, response)
       
       return
