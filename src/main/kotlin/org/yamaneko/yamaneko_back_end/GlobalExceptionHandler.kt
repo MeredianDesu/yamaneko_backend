@@ -6,6 +6,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
+import org.yamaneko.yamaneko_back_end.customExceptions.JwtExpirationException
 import org.yamaneko.yamaneko_back_end.dto.ErrorResponse
 import software.amazon.awssdk.core.exception.SdkClientException
 
@@ -77,5 +78,16 @@ class GlobalExceptionHandler {
     )
     
     return ResponseEntity(errorResponse, HttpStatus.UNPROCESSABLE_ENTITY)
+  }
+  
+  // JWT Expiration handler
+  @ExceptionHandler(JwtExpirationException::class)
+  fun handleJwtExpiration(ex: JwtExpirationException): ResponseEntity<ErrorResponse> {
+    val error = ex.message
+    val errorResponse = ErrorResponse(
+      error = "JwtExpirationException", message = mapOf("details" to error)
+    )
+    
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse)
   }
 }

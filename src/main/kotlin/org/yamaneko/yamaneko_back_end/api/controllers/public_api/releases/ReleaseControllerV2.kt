@@ -1,4 +1,4 @@
-package org.yamaneko.yamaneko_back_end.api.controllers.public_api
+package org.yamaneko.yamaneko_back_end.api.controllers.public_api.releases
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -45,14 +45,14 @@ class ReleaseControllerV2(
   )
   fun getReleases(
     @Parameter(
-      description = "Number of releases received.", example = "4"
+      description = "Number of releases received.", example = "1"
     ) @RequestParam(required = false) length: Int?
   ): ResponseEntity<List<ReleaseDTO>> {
     val releases = if(length != null) releaseService.getLatestReleases(length)
     else releaseService.getAllReleases()
     
     return if(releases.isNotEmpty()) ResponseEntity.status(HttpStatus.OK).body(releases)
-    else ResponseEntity.status(HttpStatus.NOT_FOUND).build()
+    else ResponseEntity.noContent().build()
   }
   
   @Operation(summary = "Get release by ID.")

@@ -48,7 +48,7 @@ class UserController(
     @RequestHeader("Authorization", required = false) authHeader: String?
   ): ResponseEntity<UserResponseDTO> {
     if(authHeader.isNullOrBlank() || ! authHeader.startsWith("Bearer ")) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
     }
     
     val accessToken = authHeader.removePrefix("Bearer ").trim()

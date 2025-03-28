@@ -67,7 +67,7 @@ class JwtUtil(
       if(e.message?.contains("JWT signature does not match") == true) {
         throw JwtSignatureException("Invalid JWT signature.")
       }
-      if(e.message?.contains("JWT parsing error: JWT expired") == true) {
+      if(e.message?.contains("JWT expired") == true) {
         throw JwtExpirationException("JWT expired.")
       }
       null
