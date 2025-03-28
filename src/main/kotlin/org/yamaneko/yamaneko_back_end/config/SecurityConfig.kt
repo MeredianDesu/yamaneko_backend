@@ -32,8 +32,9 @@ class SecurityConfig(
           "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**", "/docs",
         ).permitAll()
         it.requestMatchers(
-          "/api/auth/**", "/api/releases/**", "/api/users/v1/user"
+          "/api/auth/**", "/api/users/v1/user"
         ).permitAll()
+        it.requestMatchers(HttpMethod.GET, "/api/releases/**").permitAll()
         it.requestMatchers(
           "/api/users/**",
           "/api/banners/**",
@@ -43,6 +44,9 @@ class SecurityConfig(
           "/api/team/**",
           "/api/files/**",
         ).hasAuthority("ROLE_ADMIN")
+        it.requestMatchers(HttpMethod.POST, "/api/releases/**").hasAuthority("ROLE_ADMIN")
+        it.requestMatchers(HttpMethod.PATCH, "/api/releases/**").hasAuthority("ROLE_ADMIN")
+        it.requestMatchers(HttpMethod.DELETE, "/api/releases/**").hasAuthority("ROLE_ADMIN")
         it.anyRequest().authenticated() // Остальные запросы требуют аутентификации
       }.exceptionHandling {
         it.authenticationEntryPoint { request, response, _ ->
