@@ -1,5 +1,6 @@
 package org.yamaneko.yamaneko_back_end.service.release
 
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Sort
@@ -23,6 +24,8 @@ import java.util.*
 
 @Service
 class ReleaseServiceImpl: ReleaseService {
+  
+  val logger = LoggerFactory.getLogger(ReleaseServiceImpl::class.java)
   
   @Autowired
   private lateinit var characterRepository: CharacterRepository
@@ -126,23 +129,15 @@ class ReleaseServiceImpl: ReleaseService {
     
   }
   
-  override fun getReleaseByKeyword(keyword: String): ResponseEntity<Any> {
-    val release =
-      releaseRepository.findReleaseByName("%$keyword%") ?: return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        .body("Release not found")
-    val response = releaseMapper.toDTO(release)
+  override fun getReleasesByTitleQuery(query: String): List<ReleaseDTO>? {
+    val isQuery = releaseRepository.findByTitleQuery(query).isNullOrEmpty()
     
-    return ResponseEntity.status(HttpStatus.OK).body(response)
-  }
-  
-  override fun getReleasesByGenre(genre: String): ResponseEntity<Any> {
-    val releases =
-      releaseRepository.findReleasesByGenre("%$genre%") ?: return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        .body("Releases not found")
-    
-    val response = releases.map { releaseMapper.toDTO(it) }
-    
-    return ResponseEntity.status(HttpStatus.OK).body(response)
+    return if(! isQuery) {
+      val releases = releaseRepository.findByTitleQuery(query)
+      releases?.map { releaseMapper.toDTO(it) }
+    } else {
+      null
+    }
   }
   
   override fun updateRelease(request: ReleaseRequestPatch, releaseId: Long): ReleaseDTO {

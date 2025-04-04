@@ -44,11 +44,8 @@ class ReleaseControllerV1(
         content = [Content(mediaType = "application/json", schema = Schema(implementation = ReleaseDTO::class))]
       ),
       ApiResponse(
-        responseCode = "203",
-        description = "No content",
-        content = [Content(
-          mediaType = "text/plain",
-          schema = Schema(type = "string", example = "No releases added yet")
+        responseCode = "203", description = "No content", content = [Content(
+          mediaType = "text/plain", schema = Schema(type = "string", example = "No releases added yet")
         )]
       ),
       ApiResponse(
@@ -60,8 +57,7 @@ class ReleaseControllerV1(
   )
   fun getReleases(
     @Parameter(
-      description = "Number of releases received.",
-      example = "4"
+      description = "Number of releases received.", example = "4"
     ) @RequestParam(required = false) length: Int?
   ): ResponseEntity<List<ReleaseDTO>> {
     val releases = if(length != null) releaseService.getLatestReleases(length)
@@ -94,54 +90,13 @@ class ReleaseControllerV1(
   )
   fun getReleaseById(
     @Parameter(
-      description = "ID of release.",
-      example = "4"
+      description = "ID of release.", example = "4"
     ) @PathVariable(required = false) releaseId: Long
   ): ResponseEntity<ReleaseDTO> {
     val release = releaseService.getReleaseById(releaseId)
     
     return if(release != null) ResponseEntity.status(HttpStatus.OK).body(release)
     else ResponseEntity.notFound().build()
-  }
-  
-  @Operation(summary = "Find release by specified word by name.")
-  @GetMapping("/search/name/{keyword}")
-  @ApiResponses(
-    value = [ApiResponse(
-      responseCode = "200",
-      description = "Release found",
-      content = [Content(mediaType = "application/json", schema = Schema(implementation = ReleaseDTO::class))]
-    ), ApiResponse(
-      responseCode = "404",
-      description = "Not found",
-      content = [Content(mediaType = "text/plain", schema = Schema(type = "string", example = "Release not found"))]
-    )]
-  )
-  fun getReleaseByName(@Parameter(description = "Enter specified word for search.") @PathVariable(required = true) keyword: String): ResponseEntity<Any> {
-    val response = releaseService.getReleaseByKeyword(keyword)
-    
-    return if(response?.statusCode == HttpStatus.NOT_FOUND) ResponseEntity.notFound().build()
-    else ResponseEntity.status(HttpStatus.OK).body(response)
-  }
-  
-  @Operation(summary = "Find release by specified word by name.")
-  @GetMapping("/search/genre/{genre}")
-  @ApiResponses(
-    value = [ApiResponse(
-      responseCode = "200",
-      description = "Release found",
-      content = [Content(mediaType = "application/json", schema = Schema(implementation = ReleaseDTO::class))]
-    ), ApiResponse(
-      responseCode = "404",
-      description = "Not found",
-      content = [Content(mediaType = "text/plain", schema = Schema(type = "string", example = "Release not found"))]
-    )]
-  )
-  fun getReleasesByGenre(@Parameter(description = "Enter specified genres for search.") @PathVariable(required = true) genre: String): ResponseEntity<Any> {
-    val response = releaseService.getReleasesByGenre(genre)
-    
-    return if(response?.statusCode == HttpStatus.NOT_FOUND) ResponseEntity.notFound().build()
-    else ResponseEntity.status(HttpStatus.OK).body(response)
   }
   
   @Operation(summary = "Create new release.")
@@ -161,8 +116,7 @@ class ReleaseControllerV1(
     ]
   )
   fun saveRelease(
-    @Valid @RequestBody request: ReleaseRequestPost,
-    httpRequest: HttpServletRequest
+    @Valid @RequestBody request: ReleaseRequestPost, httpRequest: HttpServletRequest
   ): ResponseEntity<ReleaseDTO> {
     val response = releaseService.createRelease(request)
     val botNotificationBody = BotRequestDTO(
@@ -206,9 +160,7 @@ class ReleaseControllerV1(
   @Operation(summary = "Update release.")
   @PatchMapping("/{releaseId}")
   fun patchRelease(
-    @RequestBody request: ReleaseRequestPatch,
-    @PathVariable releaseId: Long,
-    httpRequest: HttpServletRequest
+    @RequestBody request: ReleaseRequestPatch, @PathVariable releaseId: Long, httpRequest: HttpServletRequest
   ): ResponseEntity<Any> {
     val releaseName = releaseRepository.findReleaseById(releaseId)?.translatedName
     

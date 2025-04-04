@@ -14,6 +14,7 @@ import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import org.yamaneko.yamaneko_back_end.config.filter.JwtAuthenticationFilter
+import org.yamaneko.yamaneko_back_end.entity.Role
 
 @Configuration
 @EnableWebSecurity
@@ -43,10 +44,10 @@ class SecurityConfig(
           "/api/news/**",
           "/api/team/**",
           "/api/files/**",
-        ).hasAuthority("ROLE_ADMIN")
-        it.requestMatchers(HttpMethod.POST, "/api/releases/**").hasAuthority("ROLE_ADMIN")
-        it.requestMatchers(HttpMethod.PATCH, "/api/releases/**").hasAuthority("ROLE_ADMIN")
-        it.requestMatchers(HttpMethod.DELETE, "/api/releases/**").hasAuthority("ROLE_ADMIN")
+        ).hasAuthority(Role.ROLE_ADMIN.name)
+        it.requestMatchers(HttpMethod.POST, "/api/releases/**").hasAuthority(Role.ROLE_ADMIN.name)
+        it.requestMatchers(HttpMethod.PATCH, "/api/releases/**").hasAuthority(Role.ROLE_ADMIN.name)
+        it.requestMatchers(HttpMethod.DELETE, "/api/releases/**").hasAuthority(Role.ROLE_ADMIN.name)
         it.anyRequest().authenticated() // Остальные запросы требуют аутентификации
       }.exceptionHandling {
         it.authenticationEntryPoint { request, response, _ ->

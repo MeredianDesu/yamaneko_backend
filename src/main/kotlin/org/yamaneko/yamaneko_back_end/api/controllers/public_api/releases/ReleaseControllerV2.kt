@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -29,6 +30,8 @@ class ReleaseControllerV2(
   private val botService: BotService,
   private val releaseRepository: ReleaseRepository,
 ) {
+  
+  val logger = LoggerFactory.getLogger(ReleaseControllerV2::class.java)
   
   private val userData = AuthenticatedUserData()
   
@@ -110,19 +113,13 @@ class ReleaseControllerV2(
   @Operation(summary = "Delete release")
   @DeleteMapping("{releaseId}")
   @ApiResponses(
-    value = [ApiResponse(
-      responseCode = "200",
-      description = "Release deleted",
-      content = [Content(mediaType = "text/plain", schema = Schema(type = "string", example = "Release deleted"))]
-    ), ApiResponse(
-      responseCode = "400",
-      description = "Bad request",
-      content = [Content(mediaType = "text/plain", schema = Schema(type = "string", example = "Bad request"))]
-    ), ApiResponse(
-      responseCode = "404",
-      description = "Not found",
-      content = [Content(mediaType = "text/plain", schema = Schema(type = "string", example = "Release not found"))]
-    )]
+    value = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Release deleted",
+        content = [Content(mediaType = "text/plain", schema = Schema(type = "string", example = "Release deleted"))]
+      ),
+    ]
   )
   fun removeRelease(@Parameter(description = "Release ID") @PathVariable(required = true) releaseId: Long): ResponseEntity<String> {
     val status = releaseService.removeRelease(releaseId)
@@ -153,5 +150,24 @@ class ReleaseControllerV2(
     
     
     return ResponseEntity.ok().build()
+  }
+  
+  @Operation(summary = "Get releases by title searching.")
+  @GetMapping("/search")
+  @ApiResponses(
+    value = [ApiResponse(
+      responseCode = "200",
+      description = "Release(-es) founded",
+      content = [Content(mediaType = "application/json", schema = Schema(implementation = ReleaseDTO::class))]
+    )]
+  )
+  fun getReleasesByTitleSearching(@RequestParam query: String): ResponseEntity<Any> {
+    val releases = releaseService.getReleasesByTitleQuery(query)
+    
+    return if(releases.isNullOrEmpty()) {
+      ResponseEntity.notFound().build()
+    } else {
+      ResponseEntity.ok().body(releases)
+    }
   }
 }

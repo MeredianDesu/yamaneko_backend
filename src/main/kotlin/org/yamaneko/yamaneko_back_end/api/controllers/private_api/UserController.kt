@@ -1,4 +1,4 @@
-package org.yamaneko.yamaneko_back_end.api.controllers.public_api
+package org.yamaneko.yamaneko_back_end.api.controllers.private_api
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag

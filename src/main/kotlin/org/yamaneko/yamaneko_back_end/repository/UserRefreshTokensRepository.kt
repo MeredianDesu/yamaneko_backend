@@ -5,11 +5,8 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.yamaneko.yamaneko_back_end.entity.RefreshToken
 
-interface UserRefreshTokensRepository: JpaRepository<RefreshToken, Long>{
-    @Query( "FROM RefreshToken a WHERE a.user.id = :userId AND TO_TIMESTAMP( a.expiresAt, 'dd-MM-yyyy HH24:mi:ss' ) > CURRENT_TIMESTAMP" )
-    fun findByUser(@Param( "userId" ) userId: Long ): RefreshToken?
-
-//    @Modifying
-//    @Query("UPDATE RefreshToken a SET a.isRevoked = true WHERE a.token = :token")
-//    fun disableToken( @Param( "token" ) token: String? )
+interface UserRefreshTokensRepository: JpaRepository<RefreshToken, Long> {
+  
+  @Query("FROM RefreshToken a WHERE a.user.id = :userId AND TO_TIMESTAMP( a.expiresAt, 'dd-MM-yyyy HH24:mi:ss' ) > CURRENT_TIMESTAMP")
+  fun findByUser(@Param("userId") userId: Long): RefreshToken?
 }
