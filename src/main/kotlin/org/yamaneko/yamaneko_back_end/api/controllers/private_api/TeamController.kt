@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.yamaneko.yamaneko_back_end.dto.ErrorResponse
 import org.yamaneko.yamaneko_back_end.dto.team.TeamDTO
 import org.yamaneko.yamaneko_back_end.dto.team.TeamRequestDTO
 import org.yamaneko.yamaneko_back_end.service.team.TeamService
@@ -55,9 +56,17 @@ class TeamController(
   
   @Operation(summary = "Add new team member.")
   @PostMapping("")
-  fun addTeamMember(@RequestBody request: TeamRequestDTO): ResponseEntity<TeamDTO> {
+  fun addTeamMember(@RequestBody request: TeamRequestDTO): ResponseEntity<Any> {
     val response = teamService.createTeamMember(request)
     
-    return ResponseEntity.status(HttpStatus.CREATED).body(response)
+    return if(response !== null) {
+      ResponseEntity.status(HttpStatus.CREATED).body(response)
+    } else {
+      val err = ErrorResponse(
+        error = "Conflict",
+        message = mapOf("details" to "User already exists or not found"),
+      )
+      ResponseEntity.status(HttpStatus.CONFLICT).body(err)
+    }
   }
 }

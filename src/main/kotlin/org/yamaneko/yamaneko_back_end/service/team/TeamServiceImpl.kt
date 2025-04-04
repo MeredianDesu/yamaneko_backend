@@ -8,10 +8,12 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.yamaneko.yamaneko_back_end.dto.team.TeamDTO
 import org.yamaneko.yamaneko_back_end.dto.team.TeamRequestDTO
+import org.yamaneko.yamaneko_back_end.entity.Role
 import org.yamaneko.yamaneko_back_end.entity.Team
 import org.yamaneko.yamaneko_back_end.mappers.TeamMapper
 import org.yamaneko.yamaneko_back_end.repository.TeamRepository
 import org.yamaneko.yamaneko_back_end.repository.UserRepository
+import kotlin.jvm.optionals.getOrNull
 
 @Service
 class TeamServiceImpl: TeamService {
@@ -36,8 +38,14 @@ class TeamServiceImpl: TeamService {
     return teamList.map { teamMapper.toDTO(it) }
   }
   
-  override fun createTeamMember(request: TeamRequestDTO): TeamDTO {
-    val user = userRepository.findById(request.user).orElse(null)
+  override fun createTeamMember(request: TeamRequestDTO): TeamDTO? {
+    val user = userRepository.findById(request.user).getOrNull()
+    
+    if(user === null) return null
+    
+    val isExist = teamRepository.findByUserId(user.id) == null
+    
+    if(! isExist) return null
     
     val member = Team().apply {
       name = request.name
@@ -45,6 +53,10 @@ class TeamServiceImpl: TeamService {
     }
     
     val savedMember = teamRepository.save(member)
+    if(user.roles === Role.ROLE_USER) {
+      user.roles = Role.ROLE_DUBBER
+      userRepository.save(user)
+    }
     
     return teamMapper.toDTO(savedMember)
   }
@@ -65,6 +77,12 @@ class TeamServiceImpl: TeamService {
     
     if(member !== null) {
       member.user?.id?.let { teamRepository.deleteByUserId(it) }
+      
+      val user = userRepository.findById(userId).get()
+      if(user.roles === Role.ROLE_DUBBER) {
+        user.roles = Role.ROLE_USER
+        userRepository.save(user)
+      }
       
       return ResponseEntity.ok().build()
     } else {
