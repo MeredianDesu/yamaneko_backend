@@ -27,7 +27,14 @@ open class User(
   @Column(name = "created_at") internal var createdAt: String = "",
 
 // Links
-  @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL]) internal var team: Team? = null): UserDetails {
+  @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL]) internal var team: Team? = null,
+  
+  @OneToMany(
+    mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true
+  ) internal var userAchievements: MutableList<UserAchievement> = mutableListOf()
+
+
+): UserDetails {
   
   override fun getAuthorities(): Collection<GrantedAuthority> {
     return listOf(SimpleGrantedAuthority(roles.name))

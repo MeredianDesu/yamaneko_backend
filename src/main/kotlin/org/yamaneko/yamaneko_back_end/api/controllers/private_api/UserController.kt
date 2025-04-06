@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestHeader
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import org.yamaneko.yamaneko_back_end.dto.user.UserDTO
 import org.yamaneko.yamaneko_back_end.dto.user.UserResponseDTO
 import org.yamaneko.yamaneko_back_end.repository.UserRepository
@@ -71,4 +68,12 @@ class UserController(
     )
   }
   
+  @Operation(summary = "Add achievement")
+  @PostMapping("/achievements/set")
+  fun setAchievement(
+    @RequestParam("userId") userId: Long, @RequestParam("achievementId") achievementId: Long
+  ): ResponseEntity<Any> {
+    
+    return userService.addAchievementToUser(userId, achievementId)
+  }
 }

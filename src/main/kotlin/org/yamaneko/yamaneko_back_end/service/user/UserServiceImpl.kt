@@ -5,13 +5,16 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import org.yamaneko.yamaneko_back_end.dto.ErrorResponse
 import org.yamaneko.yamaneko_back_end.dto.user.UserAuthRequest
 import org.yamaneko.yamaneko_back_end.dto.user.UserDTO
 import org.yamaneko.yamaneko_back_end.dto.user.UserRegistrationRequest
 import org.yamaneko.yamaneko_back_end.entity.RefreshToken
 import org.yamaneko.yamaneko_back_end.entity.User
+import org.yamaneko.yamaneko_back_end.entity.UserAchievement
 import org.yamaneko.yamaneko_back_end.entity.UserToken
 import org.yamaneko.yamaneko_back_end.mappers.UserMapper
+import org.yamaneko.yamaneko_back_end.repository.AchievementRepository
 import org.yamaneko.yamaneko_back_end.repository.UserRefreshTokensRepository
 import org.yamaneko.yamaneko_back_end.repository.UserRepository
 import org.yamaneko.yamaneko_back_end.repository.UserTokensRepository
@@ -22,6 +25,9 @@ import java.util.*
 
 @Service
 class UserServiceImpl: UserService {
+  
+  @Autowired
+  private lateinit var achievementRepository: AchievementRepository
   
   @Autowired
   lateinit var userRepository: UserRepository
@@ -142,4 +148,30 @@ class UserServiceImpl: UserService {
     
     return ResponseEntity.status(HttpStatus.OK).body("Check passed successfully")
   }
+  
+  override fun addAchievementToUser(userId: Long, achievementId: Long): ResponseEntity<Any> {
+    val user = userRepository.findById(userId).orElseThrow { RuntimeException("User not found") }
+    val achievement =
+      achievementRepository.findById(achievementId).orElseThrow { RuntimeException("Achievement not found") }
+    
+    val userAchievement = user.userAchievements.find { it.achievement?.id == achievementId }
+    
+    return if(userAchievement == null) {
+      val newUserAchievement = UserAchievement().apply {
+        this.user = user
+        this.achievement = achievement
+        this.receivedAt = dateFormatter.dateToString(Date())
+      }
+      
+      user.userAchievements.add(newUserAchievement)
+      
+      userRepository.save(user)
+      
+      ResponseEntity.status(HttpStatus.CREATED).build()
+    } else {
+      val err = ErrorResponse(error = "Conflict", message = mapOf("details" to "Achievement already set"))
+      ResponseEntity.status(HttpStatus.CONFLICT).body(err)
+    }
+  }
+  
 }

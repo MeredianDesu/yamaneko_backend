@@ -25,30 +25,31 @@ class SecurityConfig(
   @Bean
   fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
     http.csrf { it.disable() }.cors { it.configurationSource(corsConfigurationSource()) }
-      .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }.authorizeHttpRequests {
-        it.requestMatchers(
-          HttpMethod.OPTIONS, "/api/**" // CORS preflight для React
-        ).permitAll()
-        it.requestMatchers(
-          "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**", "/docs",
-        ).permitAll()
-        it.requestMatchers(
-          "/api/auth/**", "/api/users/v1/user"
-        ).permitAll()
-        it.requestMatchers(HttpMethod.GET, "/api/releases/**").permitAll()
-        it.requestMatchers(
-          "/api/users/**",
-          "/api/banners/**",
-          "/api/characters/**",
-          "/api/genres/**",
-          "/api/news/**",
-          "/api/team/**",
-          "/api/files/**",
-        ).hasAuthority(Role.ROLE_ADMIN.name)
-        it.requestMatchers(HttpMethod.POST, "/api/releases/**").hasAuthority(Role.ROLE_ADMIN.name)
-        it.requestMatchers(HttpMethod.PATCH, "/api/releases/**").hasAuthority(Role.ROLE_ADMIN.name)
-        it.requestMatchers(HttpMethod.DELETE, "/api/releases/**").hasAuthority(Role.ROLE_ADMIN.name)
-        it.anyRequest().authenticated() // Остальные запросы требуют аутентификации
+      .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+      .authorizeHttpRequests { authorizeRequests ->
+        authorizeRequests.requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll() // CORS preflight для React
+          .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**", "/docs")
+          .permitAll().requestMatchers("/api/auth/**", "/api/users/v1/user").permitAll()
+          .requestMatchers(HttpMethod.GET, "/api/releases/**", "/api/achievements/**", "/api/users/**").permitAll()
+          .requestMatchers(
+            "/api/users/**",
+            "/api/banners/**",
+            "/api/characters/**",
+            "/api/genres/**",
+            "/api/news/**",
+            "/api/team/**",
+            "/api/files/**",
+            "/api/achievements/**"
+          ).hasAuthority(Role.ROLE_ADMIN.name).requestMatchers(HttpMethod.POST, "/api/releases/**")
+          .hasAuthority(Role.ROLE_ADMIN.name).requestMatchers(HttpMethod.PATCH, "/api/releases/**")
+          .hasAuthority(Role.ROLE_ADMIN.name).requestMatchers(HttpMethod.DELETE, "/api/releases/**")
+          .hasAuthority(Role.ROLE_ADMIN.name).requestMatchers(HttpMethod.POST, "/api/users/**")
+          .hasAuthority(Role.ROLE_ADMIN.name).requestMatchers(HttpMethod.PATCH, "/api/users/**")
+          .hasAuthority(Role.ROLE_ADMIN.name).requestMatchers(HttpMethod.DELETE, "/api/users/**")
+          .hasAuthority(Role.ROLE_ADMIN.name).requestMatchers(HttpMethod.POST, "/api/achievements/**")
+          .hasAuthority(Role.ROLE_ADMIN.name).requestMatchers(HttpMethod.PATCH, "/api/achievements/**")
+          .hasAuthority(Role.ROLE_ADMIN.name).requestMatchers(HttpMethod.DELETE, "/api/achievements/**")
+          .hasAuthority(Role.ROLE_ADMIN.name).anyRequest().authenticated() // Остальные запросы требуют аутентификации
       }.exceptionHandling {
         it.authenticationEntryPoint { request, response, _ ->
           if(request.getHeader("Authorization").isNullOrBlank()) {
@@ -68,7 +69,7 @@ class SecurityConfig(
     return AccessDeniedHandler { _, response, _ ->
       response.contentType = "application/json"
       response.status = HttpServletResponse.SC_FORBIDDEN
-      response.writer.write("""{"error": "Forbidden", "message:": "You do not have permissions to access this resource"}""")
+      response.writer.write("""{"error": "Forbidden", "message": "You do not have permissions to access this resource"}""")
     }
   }
   
@@ -86,6 +87,7 @@ class SecurityConfig(
     
     val source = UrlBasedCorsConfigurationSource()
     source.registerCorsConfiguration("/**", configuration)
+    
     return source
   }
 }
