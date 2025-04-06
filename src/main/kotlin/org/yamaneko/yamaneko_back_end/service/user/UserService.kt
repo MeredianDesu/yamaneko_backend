@@ -12,6 +12,7 @@ interface UserService {
   fun registerUser(request: UserRegistrationRequest): ResponseEntity<String>
   fun authUser(request: UserAuthRequest): ResponseEntity<String>
   fun generateAndSaveAccessToken(user: User): String
+  fun addAchievementToUser(userId: Long, achievementId: Long): ResponseEntity<Any>
   
   //  fun findByUsername(username: String): Optional<User>
 //  fun existByUsername(username: String): Boolean
