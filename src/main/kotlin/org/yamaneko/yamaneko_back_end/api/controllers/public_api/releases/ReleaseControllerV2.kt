@@ -17,7 +17,9 @@ import org.yamaneko.yamaneko_back_end.dto.bot_dto.BotRequestDTO
 import org.yamaneko.yamaneko_back_end.dto.release.ReleaseDTO
 import org.yamaneko.yamaneko_back_end.dto.release.ReleaseRequestPatch
 import org.yamaneko.yamaneko_back_end.dto.release.ReleaseRequestPost
+import org.yamaneko.yamaneko_back_end.dto.release.ReleaseStateDTO
 import org.yamaneko.yamaneko_back_end.repository.ReleaseRepository
+import org.yamaneko.yamaneko_back_end.repository.ReleaseStateRepository
 import org.yamaneko.yamaneko_back_end.service.discord_bot.BotService
 import org.yamaneko.yamaneko_back_end.service.release.ReleaseService
 import org.yamaneko.yamaneko_back_end.utils.AuthenticatedUserData
@@ -29,6 +31,7 @@ class ReleaseControllerV2(
   private val releaseService: ReleaseService,
   private val botService: BotService,
   private val releaseRepository: ReleaseRepository,
+  private val releaseStateRepository: ReleaseStateRepository,
 ) {
   
   val logger = LoggerFactory.getLogger(ReleaseControllerV2::class.java)
@@ -168,6 +171,19 @@ class ReleaseControllerV2(
       ResponseEntity.notFound().build()
     } else {
       ResponseEntity.ok().body(releases)
+    }
+  }
+  
+  @Operation(summary = "Get release states.")
+  @GetMapping("/states")
+  fun getStates(): ResponseEntity<Any> {
+    val stateList = releaseStateRepository.findAll()
+    
+    return if(stateList.isEmpty()) {
+      ResponseEntity.notFound().build()
+    } else {
+      val response = stateList.map { it.id?.let { it1 -> it.state?.let { it2 -> ReleaseStateDTO(it1, it2) } } }
+      ResponseEntity.ok().body(response)
     }
   }
 }

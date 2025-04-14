@@ -3,11 +3,14 @@ package org.yamaneko.yamaneko_back_end
 import org.springframework.boot.CommandLineRunner
 import org.springframework.stereotype.Component
 import org.yamaneko.yamaneko_back_end.entity.Achievement
+import org.yamaneko.yamaneko_back_end.entity.ReleaseState
 import org.yamaneko.yamaneko_back_end.repository.AchievementRepository
+import org.yamaneko.yamaneko_back_end.repository.ReleaseStateRepository
 
 @Component
 class DataInitializer(
   private val achievementRepository: AchievementRepository,
+  private val releaseStateRepository: ReleaseStateRepository,
 ): CommandLineRunner {
   
   override fun run(vararg args: String?) {
@@ -37,6 +40,28 @@ class DataInitializer(
         condition = "Awarded when a developer completes a major feature or release."
       )
       achievementRepository.save(achievement)
+    }
+    
+    if(releaseStateRepository.count() == 0L) {
+      var releaseState = ReleaseState(
+        state = "Planned"
+      )
+      releaseStateRepository.save(releaseState)
+      
+      releaseState = ReleaseState(
+        state = "Ongoing"
+      )
+      releaseStateRepository.save(releaseState)
+      
+      releaseState = ReleaseState(
+        state = "Finished"
+      )
+      releaseStateRepository.save(releaseState)
+      
+      releaseState = ReleaseState(
+        state = "Referred"
+      )
+      releaseStateRepository.save(releaseState)
     }
   }
 }
