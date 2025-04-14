@@ -9,8 +9,6 @@ class UserMapper {
     return UserDTO(
       id = user.id,
       username = user.username,
-      email = user.email,
-      password = user.password,
       roles = user.roles,
       avatar = user.avatar,
       createdAt = user.createdAt,

@@ -7,7 +7,9 @@ import org.yamaneko.yamaneko_back_end.entity.User
 
 interface UserRepository: JpaRepository<User, Long> {
   
-  @Query("FROM User a WHERE a.email = :email")
+  @Query("FROM User u WHERE u.email = :email")
   fun findByEmail(@Param("email") email: String): User?
   
+  @Query("FROM User u WHERE u.username = :username")
+  fun findByUsername(@Param("username") username: String): User?
 }

@@ -36,7 +36,6 @@ class AchievementController(
   )
   fun getAchievements(): ResponseEntity<Any> {
     val achievements = achievementService.getAllAchievements()
-    logger.info("Achievements: {}", achievements)
     
     return if(achievements.isNullOrEmpty()) {
       ResponseEntity.notFound().build()

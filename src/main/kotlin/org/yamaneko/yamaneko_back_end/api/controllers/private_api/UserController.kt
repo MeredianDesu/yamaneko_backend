@@ -39,6 +39,7 @@ class UserController(
     }
   }
   
+  @Deprecated(message = "Deprecated")
   @Operation(summary = "Get user by JWT.")
   @GetMapping("/user")
   fun getUserByJWT(
@@ -60,7 +61,22 @@ class UserController(
       UserResponseDTO(
         id = user.id,
         username = user.username,
-        email = user.email,
+        roles = user.roles,
+        avatar = user.avatar,
+        createdAt = user.createdAt,
+      )
+    )
+  }
+  
+  @Operation(summary = "Get user by username")
+  @GetMapping("/user/{username}")
+  fun getUserByUsername(@PathVariable("username") username: String): ResponseEntity<UserResponseDTO> {
+    val user = userRepository.findByUsername(username) ?: return ResponseEntity.notFound().build()
+    
+    return ResponseEntity.ok(
+      UserResponseDTO(
+        id = user.id,
+        username = user.username,
         roles = user.roles,
         avatar = user.avatar,
         createdAt = user.createdAt,
