@@ -44,6 +44,12 @@ class JwtAuthenticationFilter: OncePerRequestFilter() {
       return
     }
     
+    if(request.requestURI.startsWith("/api/files/v2/user-file-upload")) {
+      filterChain.doFilter(request, response)
+      
+      return
+    }
+    
     if(request.requestURI.startsWith("/api/users/v1/user")) {
       filterChain.doFilter(request, response)
       

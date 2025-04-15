@@ -17,6 +17,7 @@ import java.time.Duration
 
 @Service
 class S3Service {
+  
   @Autowired
   lateinit var s3Config: S3Config
   
@@ -24,6 +25,7 @@ class S3Service {
   lateinit var episodeService: EpisodeService
   
   // type: "release" | "image" | "banner"
+  // function for releases
   fun createUploadURL(id: Long, fileName: String, type: String, isEpisode: Boolean = false): S3ResponseDTO {
     val credentials = AwsBasicCredentials.create(s3Config.accessKey, s3Config.secretKey)
     
@@ -60,6 +62,28 @@ class S3Service {
               "${s3Config.cdnEndpoint}/$type/${id.toString().md5()}/$fileName"
             }
           }
+        )
+        
+        return response
+      }
+  }
+  
+  fun createUserPageLinks(username: String, filename: String): S3ResponseDTO {
+    val credentials = AwsBasicCredentials.create(s3Config.accessKey, s3Config.secretKey)
+    
+    S3Presigner.builder().region(Region.of(s3Config.region))
+      .credentialsProvider(StaticCredentialsProvider.create(credentials))
+      .endpointOverride(URI.create(s3Config.endpoint)).build().use { presigner ->
+        val putObjectRequest = PutObjectRequest.builder().bucket(s3Config.bucketName).key("$username/$filename").build()
+        
+        val presignRequest =
+          PutObjectPresignRequest.builder().signatureDuration(Duration.ofSeconds(10)).putObjectRequest(putObjectRequest)
+            .build()
+        
+        val presignedRequest = presigner.presignPutObject(presignRequest)
+        
+        val response = S3ResponseDTO(
+          uploadLink = presignedRequest.url().toString(), link = "${s3Config.cdnEndpoint}/$username/$filename"
         )
         
         return response
