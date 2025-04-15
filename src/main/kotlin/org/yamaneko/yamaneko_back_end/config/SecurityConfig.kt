@@ -29,16 +29,15 @@ class SecurityConfig(
       .authorizeHttpRequests { authorizeRequests ->
         authorizeRequests.requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll() // CORS preflight для React
           .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**", "/docs")
-          .permitAll().requestMatchers("/api/auth/**", "/api/users/v1/user").permitAll()
-          .requestMatchers(HttpMethod.GET, "/api/releases/**", "/api/achievements/**", "/api/users/**").permitAll()
-          .requestMatchers(
+          .permitAll().requestMatchers("/api/auth/**", "/api/users/v1/user").permitAll().requestMatchers(
+            HttpMethod.GET,
+            "/api/releases/**",
+            "/api/achievements/**",
             "/api/users/**",
-            "/api/banners/**",
-            "/api/characters/**",
-            "/api/genres/**",
-            "/api/news/**",
-            "/api/team/**",
-            "/api/files/**",
+            "/api/files/v2/user-file-upload"
+          ).permitAll().requestMatchers(
+            "/api/users/**", "/api/banners/**", "/api/characters/**", "/api/genres/**", "/api/news/**", "/api/team/**",
+//            "/api/files/**",
             "/api/achievements/**"
           ).hasAuthority(Role.ROLE_ADMIN.name).requestMatchers(HttpMethod.POST, "/api/releases/**")
           .hasAuthority(Role.ROLE_ADMIN.name).requestMatchers(HttpMethod.PATCH, "/api/releases/**")
