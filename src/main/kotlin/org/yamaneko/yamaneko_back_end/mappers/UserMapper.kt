@@ -10,7 +10,8 @@ class UserMapper {
       id = user.id,
       username = user.username,
       roles = user.roles,
-      avatar = user.avatar,
+      avatar = user.avatar ?: "",
+      header = user.header ?: "",
       createdAt = user.createdAt,
     )
   }

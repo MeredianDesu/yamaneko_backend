@@ -1,6 +1,7 @@
 package org.yamaneko.yamaneko_back_end.service.user
 
 import jakarta.transaction.Transactional
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service
 import org.yamaneko.yamaneko_back_end.dto.ErrorResponse
 import org.yamaneko.yamaneko_back_end.dto.user.UserAuthRequest
 import org.yamaneko.yamaneko_back_end.dto.user.UserDTO
+import org.yamaneko.yamaneko_back_end.dto.user.UserPatchRequestDTO
 import org.yamaneko.yamaneko_back_end.dto.user.UserRegistrationRequest
 import org.yamaneko.yamaneko_back_end.entity.RefreshToken
 import org.yamaneko.yamaneko_back_end.entity.User
@@ -25,6 +27,8 @@ import java.util.*
 
 @Service
 class UserServiceImpl: UserService {
+  
+  private val logger = LoggerFactory.getLogger(UserServiceImpl::class.java)
   
   @Autowired
   private lateinit var achievementRepository: AchievementRepository
@@ -172,6 +176,19 @@ class UserServiceImpl: UserService {
       val err = ErrorResponse(error = "Conflict", message = mapOf("details" to "Achievement already set"))
       ResponseEntity.status(HttpStatus.CONFLICT).body(err)
     }
+  }
+  
+  override fun updateUserData(request: UserPatchRequestDTO, username: String): Boolean {
+    val user = userRepository.findByUsername(username) ?: return false
+    
+    logger.info("Updating user data: ${user.username}")
+    
+    request.avatar.let { user.avatar = it }
+    request.header.let { user.header = it }
+    
+    userRepository.save(user)
+    
+    return true
   }
   
 }

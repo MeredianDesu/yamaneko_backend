@@ -2,12 +2,15 @@ package org.yamaneko.yamaneko_back_end.api.controllers.private_api
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import org.yamaneko.yamaneko_back_end.dto.user.UserDTO
+import org.yamaneko.yamaneko_back_end.dto.user.UserPatchRequestDTO
 import org.yamaneko.yamaneko_back_end.dto.user.UserResponseDTO
 import org.yamaneko.yamaneko_back_end.repository.UserRepository
 import org.yamaneko.yamaneko_back_end.service.user.UserService
@@ -21,6 +24,8 @@ class UserController(
   @Autowired private var userService: UserService,
   private val userRepository: UserRepository,
 ) {
+  
+  private val logger: Logger = LoggerFactory.getLogger(UserController::class.java)
 
 //  private val userMapper = UserMapper()
   
@@ -58,14 +63,16 @@ class UserController(
       userRepository.findById(userId).orElse(null) ?: return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
     
     return ResponseEntity.ok(
-      UserResponseDTO(
-        id = user.id,
-        username = user.username,
-        roles = user.roles,
-        avatar = user.avatar,
-        createdAt = user.createdAt,
-      )
-    )
+      user.avatar?.let {
+        UserResponseDTO(
+          id = user.id,
+          username = user.username,
+          roles = user.roles,
+          avatar = it,
+          header = it,
+          createdAt = user.createdAt,
+        )
+      })
   }
   
   @Operation(summary = "Get user by username")
@@ -78,7 +85,8 @@ class UserController(
         id = user.id,
         username = user.username,
         roles = user.roles,
-        avatar = user.avatar,
+        avatar = user.avatar ?: "",
+        header = user.header ?: "",
         createdAt = user.createdAt,
       )
     )
@@ -91,5 +99,19 @@ class UserController(
   ): ResponseEntity<Any> {
     
     return userService.addAchievementToUser(userId, achievementId)
+  }
+  
+  @Operation(summary = "Update user")
+  @PatchMapping("{username}")
+  fun updateUser(@RequestBody request: UserPatchRequestDTO, @PathVariable username: String): ResponseEntity<Any> {
+    val result = userService.updateUserData(request, username)
+    
+    logger.info(result.toString())
+    
+    return if(result) {
+      ResponseEntity.ok().build()
+    } else {
+      ResponseEntity.notFound().build()
+    }
   }
 }

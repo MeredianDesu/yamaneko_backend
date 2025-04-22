@@ -39,7 +39,8 @@ class SecurityConfig(
             "/api/users/**", "/api/banners/**", "/api/characters/**", "/api/genres/**", "/api/news/**", "/api/team/**",
 //            "/api/files/**",
             "/api/achievements/**"
-          ).hasAuthority(Role.ROLE_ADMIN.name).requestMatchers(HttpMethod.POST, "/api/releases/**")
+          ).hasAuthority(Role.ROLE_USER.name).requestMatchers(HttpMethod.PATCH, "/api/users/v1/{username}")
+          .hasAuthority(Role.ROLE_ADMIN.name).requestMatchers(HttpMethod.POST, "/api/releases/**")
           .hasAuthority(Role.ROLE_ADMIN.name).requestMatchers(HttpMethod.PATCH, "/api/releases/**")
           .hasAuthority(Role.ROLE_ADMIN.name).requestMatchers(HttpMethod.DELETE, "/api/releases/**")
           .hasAuthority(Role.ROLE_ADMIN.name).requestMatchers(HttpMethod.POST, "/api/users/**")

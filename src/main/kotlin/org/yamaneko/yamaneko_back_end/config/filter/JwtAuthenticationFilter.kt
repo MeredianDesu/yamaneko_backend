@@ -50,6 +50,14 @@ class JwtAuthenticationFilter: OncePerRequestFilter() {
       return
     }
     
+    if(request.requestURI.startsWith("/api/users/v1/") && request.method == "PATCH") {
+      val jwt = request.getHeader("Authorization").removePrefix("Bearer ").trim()
+      
+      logger.info("Set attribute: $jwt")
+      
+      request.setAttribute("AuthorizationToken", jwt)
+    }
+    
     if(request.requestURI.startsWith("/api/users/v1/user")) {
       filterChain.doFilter(request, response)
       
