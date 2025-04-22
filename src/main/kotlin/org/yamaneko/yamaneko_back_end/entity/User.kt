@@ -17,12 +17,14 @@ open class User(
   @Column(name = "email", unique = true) internal var email: String = "",
   
   @Enumerated(EnumType.STRING) @Column(name = "roles", nullable = false) internal var roles: Role = Role.ROLE_USER,
+  
+  @Column(name = "header") internal var header: String? = "",
 
 //  @Column(name = "roles")
 //  @Convert(converter = StringSetConverter::class)
 //  internal var roles: MutableSet<String> = mutableSetOf("USER"),
   
-  @Column(name = "avatar") internal var avatar: String = "",
+  @Column(name = "avatar") internal var avatar: String? = "",
   
   @Column(name = "created_at") internal var createdAt: String = "",
 
