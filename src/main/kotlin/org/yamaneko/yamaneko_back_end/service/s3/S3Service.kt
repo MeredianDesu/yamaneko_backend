@@ -83,7 +83,7 @@ class S3Service {
         val presignedRequest = presigner.presignPutObject(presignRequest)
         
         val response = S3ResponseDTO(
-          uploadLink = presignedRequest.url().toString(), link = "${s3Config.cdnEndpoint}/$username/$filename"
+          uploadLink = presignedRequest.url().toString(), link = "${s3Config.cdnEndpoint}/users/$username/$filename"
         )
         
         return response
