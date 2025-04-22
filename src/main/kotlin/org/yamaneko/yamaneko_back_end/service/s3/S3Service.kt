@@ -74,7 +74,8 @@ class S3Service {
     S3Presigner.builder().region(Region.of(s3Config.region))
       .credentialsProvider(StaticCredentialsProvider.create(credentials))
       .endpointOverride(URI.create(s3Config.endpoint)).build().use { presigner ->
-        val putObjectRequest = PutObjectRequest.builder().bucket(s3Config.bucketName).key("$username/$filename").build()
+        val putObjectRequest =
+          PutObjectRequest.builder().bucket(s3Config.bucketName).key("users/$username/$filename").build()
         
         val presignRequest =
           PutObjectPresignRequest.builder().signatureDuration(Duration.ofSeconds(10)).putObjectRequest(putObjectRequest)
