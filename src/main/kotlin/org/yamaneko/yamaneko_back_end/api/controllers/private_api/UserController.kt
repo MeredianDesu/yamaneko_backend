@@ -44,7 +44,6 @@ class UserController(
     }
   }
   
-  @Deprecated(message = "Deprecated")
   @Operation(summary = "Get user by JWT.")
   @GetMapping("/user")
   fun getUserByJWT(
@@ -63,16 +62,15 @@ class UserController(
       userRepository.findById(userId).orElse(null) ?: return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
     
     return ResponseEntity.ok(
-      user.avatar?.let {
-        UserResponseDTO(
-          id = user.id,
-          username = user.username,
-          roles = user.roles,
-          avatar = it,
-          header = it,
-          createdAt = user.createdAt,
-        )
-      })
+      UserResponseDTO(
+        id = user.id,
+        username = user.username,
+        roles = user.roles,
+        avatar = user.avatar ?: "",
+        header = user.header ?: "",
+        createdAt = user.createdAt,
+      )
+    )
   }
   
   @Operation(summary = "Get user by username")
