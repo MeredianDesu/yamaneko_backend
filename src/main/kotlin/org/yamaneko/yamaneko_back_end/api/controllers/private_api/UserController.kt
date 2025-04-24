@@ -104,8 +104,6 @@ class UserController(
   fun updateUser(@RequestBody request: UserPatchRequestDTO, @PathVariable username: String): ResponseEntity<Any> {
     val result = userService.updateUserData(request, username)
     
-    logger.info(result.toString())
-    
     return if(result) {
       ResponseEntity.ok().build()
     } else {
