@@ -183,10 +183,21 @@ class UserServiceImpl: UserService {
     
     logger.info("Updating user data: ${user.username}")
     
-    request.avatar.let { user.avatar = it }
-    request.header.let { user.header = it }
+    // Обновляем аватар только если поле пришло не-null и не пустое
+    request.avatar?.takeIf { it.isNotBlank() }?.let {
+        user.avatar = it
+        logger.info("Avatar updated to '$it'")
+      }
+    
+    // Обновляем header только если поле пришло не-null и не пустое
+    request.header?.takeIf { it.isNotBlank() }?.let {
+        user.header = it
+        logger.info("Header updated to '$it'")
+      }
     
     userRepository.save(user)
+    val newUser = userRepository.findByUsername(username)
+    logger.info(newUser.toString())
     
     return true
   }
