@@ -1,0 +1,48 @@
+package org.yamaneko.yamaneko_back_end.service.post
+
+import org.springframework.stereotype.Service
+import org.yamaneko.yamaneko_back_end.dto.post.PostDTO
+import org.yamaneko.yamaneko_back_end.entity.Post
+import org.yamaneko.yamaneko_back_end.mappers.PostMapper
+import org.yamaneko.yamaneko_back_end.repository.PostRepository
+import org.yamaneko.yamaneko_back_end.repository.UserRepository
+import org.yamaneko.yamaneko_back_end.utils.DateFormatter
+import java.util.*
+
+@Service
+class PostServiceImpl(
+  private val postRepository: PostRepository, private val userRepository: UserRepository
+): PostService {
+  
+  private val mapper = PostMapper()
+  
+  override fun getPosts(userId: Long): List<PostDTO>? {
+    val posts = postRepository.findByUserId(userId)
+    
+    if(posts.isNullOrEmpty()) {
+      return null
+    }
+    
+    println(posts.map { it.user?.id })
+    
+    val response = posts.map { mapper.toDTO(it) }
+    
+    return response
+  }
+  
+  override fun createPost(username: String, postText: String): Boolean {
+    val dateFormatter = DateFormatter()
+    val user = userRepository.findByUsername(username) ?: return false
+    println("Create post: $user")
+    
+    val post = Post().apply {
+      text = postText
+      createdAt = dateFormatter.dateToString(Date())
+      this.user = user
+    }
+    
+    postRepository.save(post)
+    
+    return true
+  }
+}

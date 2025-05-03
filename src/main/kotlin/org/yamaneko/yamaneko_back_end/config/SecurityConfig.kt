@@ -34,7 +34,8 @@ class SecurityConfig(
             "/api/releases/**",
             "/api/achievements/**",
             "/api/users/**",
-            "/api/files/v2/user-file-upload"
+            "/api/files/v2/user-file-upload",
+            "/api/post/v1/{id}"
           ).permitAll().requestMatchers(
             "/api/users/**", "/api/banners/**", "/api/characters/**", "/api/genres/**", "/api/news/**", "/api/team/**",
 //            "/api/files/**",

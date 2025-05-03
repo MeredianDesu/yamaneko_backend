@@ -38,6 +38,9 @@ open class User(
 
 ): UserDetails {
   
+  @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
+  internal val posts: MutableList<Post> = mutableListOf()
+  
   override fun getAuthorities(): Collection<GrantedAuthority> {
     return listOf(SimpleGrantedAuthority(roles.name))
   }
