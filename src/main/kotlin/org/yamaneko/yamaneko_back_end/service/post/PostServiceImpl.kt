@@ -1,5 +1,6 @@
 package org.yamaneko.yamaneko_back_end.service.post
 
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.yamaneko.yamaneko_back_end.dto.post.PostDTO
 import org.yamaneko.yamaneko_back_end.entity.Post
@@ -14,6 +15,8 @@ class PostServiceImpl(
   private val postRepository: PostRepository, private val userRepository: UserRepository
 ): PostService {
   
+  private val logger = LoggerFactory.getLogger(PostServiceImpl::class.java)
+  
   private val mapper = PostMapper()
   
   override fun getPosts(userId: Long): List<PostDTO>? {
@@ -23,8 +26,6 @@ class PostServiceImpl(
       return null
     }
     
-    println(posts.map { it.user?.id })
-    
     val response = posts.map { mapper.toDTO(it) }
     
     return response
@@ -33,7 +34,6 @@ class PostServiceImpl(
   override fun createPost(username: String, postText: String): Boolean {
     val dateFormatter = DateFormatter()
     val user = userRepository.findByUsername(username) ?: return false
-    println("Create post: $user")
     
     val post = Post().apply {
       text = postText
@@ -45,4 +45,20 @@ class PostServiceImpl(
     
     return true
   }
+  
+  override fun deletePost(postId: Long, userId: Long): Boolean {
+    val post =
+      postRepository.findById(postId)
+        .orElse(null) ?: return false
+    
+    logger.info("POST: User ID: $userId, Post user ID: ${post.user?.id}")
+    if(post.user?.id != userId) {
+      return false
+    }
+    
+    postRepository.deleteById(postId)
+    
+    return true
+  }
+  
 }

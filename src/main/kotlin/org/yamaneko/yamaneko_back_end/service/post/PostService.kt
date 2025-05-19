@@ -6,4 +6,5 @@ interface PostService {
   
   fun getPosts(userId: Long): List<PostDTO>?
   fun createPost(username: String, postText: String): Boolean
+  fun deletePost(postId: Long, userId: Long): Boolean
 }

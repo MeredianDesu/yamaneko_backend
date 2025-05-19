@@ -9,13 +9,15 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.*
 import org.yamaneko.yamaneko_back_end.dto.post.PostRequestDTO
+import org.yamaneko.yamaneko_back_end.repository.UserRepository
 import org.yamaneko.yamaneko_back_end.service.post.PostServiceImpl
 
 @Tag(name = "{ v1 } Posts API")
 @RestController
 @RequestMapping("api/post/v1")
 class PostController(
-  private val postService: PostServiceImpl
+  private val postService: PostServiceImpl,
+  private val userRepository: UserRepository,
 ) {
   
   val logger: Logger = LoggerFactory.getLogger(this::class.java)
@@ -25,9 +27,11 @@ class PostController(
     val posts = postService.getPosts(id)
     
     return if(posts.isNullOrEmpty()) {
-      ResponseEntity.notFound().build()
+      ResponseEntity.notFound()
+        .build()
     } else {
-      ResponseEntity.ok().body(posts)
+      ResponseEntity.ok()
+        .body(posts)
     }
   }
   
@@ -39,9 +43,33 @@ class PostController(
     val isPostCreated = postService.createPost(userDetails.username, post.text)
     
     return if(isPostCreated) {
-      ResponseEntity.ok().build()
+      ResponseEntity.ok()
+        .build()
     } else {
-      ResponseEntity.status(HttpStatus.CONFLICT).build()
+      ResponseEntity.status(HttpStatus.CONFLICT)
+        .build()
     }
   }
+  
+  @DeleteMapping
+  fun deletePost(@RequestParam postId: Long, authentication: Authentication): ResponseEntity<Any> {
+    val userDetails = authentication.principal as UserDetails
+    val user =
+      userRepository.findByUsername(userDetails.username) ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+        .build()
+    
+    logger.info(
+      "PostID: $postId, UserID: ${user.id}"
+    )
+    val result = postService.deletePost(postId, user.id)
+    
+    return if(result) {
+      ResponseEntity.ok()
+        .build()
+    } else {
+      ResponseEntity.status(HttpStatus.FORBIDDEN)
+        .build()
+    }
+  }
+  
 }
