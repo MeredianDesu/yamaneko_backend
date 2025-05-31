@@ -41,19 +41,20 @@ class SecurityConfig(
             "/api/users/**",
             "/api/files/v2/user-file-upload",
             "/api/post/v1/{id}",
-            "/api/team/**"
+            "/api/team/**",
+            "/api/genres/**",
           )
           .permitAll()
           .requestMatchers("/api/users/v1/watchlist/**")
           .hasAnyAuthority(
             Role.ROLE_USER.name, Role.ROLE_ADMIN.name
           )
-          .requestMatchers(
-            "/api/users/**", "/api/banners/**", "/api/characters/**", "/api/genres/**", "/api/news/**",
-//            "/api/files/**",
-            "/api/achievements/**"
-          )
-          .hasAuthority(Role.ROLE_USER.name)
+//          .requestMatchers(
+//            "/api/users/**", "/api/banners/**", "/api/characters/**", , "/api/news/**",
+////            "/api/files/**",
+//            "/api/achievements/**"
+//          )
+//          .hasAuthority(Role.ROLE_USER.name)
           .requestMatchers(HttpMethod.PATCH, "/api/users/v1/{username}")
           .hasAuthority(Role.ROLE_ADMIN.name)
           .requestMatchers(HttpMethod.POST, "/api/releases/**")
