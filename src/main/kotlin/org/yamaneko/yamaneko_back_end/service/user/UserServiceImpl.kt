@@ -11,10 +11,7 @@ import org.yamaneko.yamaneko_back_end.dto.user.UserAuthRequest
 import org.yamaneko.yamaneko_back_end.dto.user.UserDTO
 import org.yamaneko.yamaneko_back_end.dto.user.UserPatchRequestDTO
 import org.yamaneko.yamaneko_back_end.dto.user.UserRegistrationRequest
-import org.yamaneko.yamaneko_back_end.entity.RefreshToken
-import org.yamaneko.yamaneko_back_end.entity.User
-import org.yamaneko.yamaneko_back_end.entity.UserAchievement
-import org.yamaneko.yamaneko_back_end.entity.UserToken
+import org.yamaneko.yamaneko_back_end.entity.*
 import org.yamaneko.yamaneko_back_end.mappers.UserMapper
 import org.yamaneko.yamaneko_back_end.repository.AchievementRepository
 import org.yamaneko.yamaneko_back_end.repository.UserRefreshTokensRepository
@@ -95,26 +92,31 @@ class UserServiceImpl: UserService {
     userTokensRepository.save(userToken)
     refreshTokensRepository.save(userRefreshToken)
     
-    return ResponseEntity.status(HttpStatus.CREATED).body("$token|${refreshToken["token"] !!}")
+    return ResponseEntity.status(HttpStatus.CREATED)
+      .body("$token|${refreshToken["token"] !!}")
   }
   
   @Transactional
   override fun authUser(request: UserAuthRequest): ResponseEntity<String> {
-    val user = userRepository.findByEmail(request.email) ?: return ResponseEntity.status(HttpStatus.NOT_FOUND)
-      .body("User not found")
+    val user =
+      userRepository.findByEmail(request.email) ?: return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .body("User not found")
     
     if(! passwordSecurity.verifyPassword(request.password, user.password)) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials")
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+        .body("Invalid credentials")
     }
     
     val refreshToken = refreshTokensRepository.findByUser(user.id)?.token
     return if(refreshToken != null) {
       val newAccessToken = generateAndSaveAccessToken(user)
-      ResponseEntity.status(HttpStatus.OK).body("$newAccessToken|$refreshToken")
+      ResponseEntity.status(HttpStatus.OK)
+        .body("$newAccessToken|$refreshToken")
     } else {
       val newAccessToken = generateAndSaveAccessToken(user)
       val newRefreshToken = generateAndSaveRefreshToken(user)
-      ResponseEntity.status(HttpStatus.OK).body("$newAccessToken|$newRefreshToken")
+      ResponseEntity.status(HttpStatus.OK)
+        .body("$newAccessToken|$newRefreshToken")
     }
   }
   
@@ -150,13 +152,17 @@ class UserServiceImpl: UserService {
     if(userWithEmail != null) return ResponseEntity.status(HttpStatus.CONFLICT)
       .body("A user with this email address is already registered")
     
-    return ResponseEntity.status(HttpStatus.OK).body("Check passed successfully")
+    return ResponseEntity.status(HttpStatus.OK)
+      .body("Check passed successfully")
   }
   
   override fun addAchievementToUser(userId: Long, achievementId: Long): ResponseEntity<Any> {
-    val user = userRepository.findById(userId).orElseThrow { RuntimeException("User not found") }
+    val user =
+      userRepository.findById(userId)
+        .orElseThrow { RuntimeException("User not found") }
     val achievement =
-      achievementRepository.findById(achievementId).orElseThrow { RuntimeException("Achievement not found") }
+      achievementRepository.findById(achievementId)
+        .orElseThrow { RuntimeException("Achievement not found") }
     
     val userAchievement = user.userAchievements.find { it.achievement?.id == achievementId }
     
@@ -171,10 +177,12 @@ class UserServiceImpl: UserService {
       
       userRepository.save(user)
       
-      ResponseEntity.status(HttpStatus.CREATED).build()
+      ResponseEntity.status(HttpStatus.CREATED)
+        .build()
     } else {
       val err = ErrorResponse(error = "Conflict", message = mapOf("details" to "Achievement already set"))
-      ResponseEntity.status(HttpStatus.CONFLICT).body(err)
+      ResponseEntity.status(HttpStatus.CONFLICT)
+        .body(err)
     }
   }
   
@@ -184,13 +192,15 @@ class UserServiceImpl: UserService {
     logger.info("Updating user data: ${user.username}")
     
     // Обновляем аватар только если поле пришло не-null и не пустое
-    request.avatar?.takeIf { it.isNotBlank() }?.let {
+    request.avatar?.takeIf { it.isNotBlank() }
+      ?.let {
         user.avatar = it
         logger.info("Avatar updated to '$it'")
       }
     
     // Обновляем header только если поле пришло не-null и не пустое
-    request.header?.takeIf { it.isNotBlank() }?.let {
+    request.header?.takeIf { it.isNotBlank() }
+      ?.let {
         user.header = it
         logger.info("Header updated to '$it'")
       }
@@ -198,6 +208,19 @@ class UserServiceImpl: UserService {
     userRepository.save(user)
     val newUser = userRepository.findByUsername(username)
     logger.info(newUser.toString())
+    
+    return true
+  }
+  
+  override fun addToFavorite(user: User, release: Release): Boolean {
+    if(user.favoriteReleases.contains(release)) {
+      
+      return false
+    }
+    
+    user.favoriteReleases.add(release)
+    release.likedByUsers.add(user)
+    userRepository.save(user)
     
     return true
   }

@@ -7,11 +7,14 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import org.yamaneko.yamaneko_back_end.dto.user.UserDTO
 import org.yamaneko.yamaneko_back_end.dto.user.UserPatchRequestDTO
 import org.yamaneko.yamaneko_back_end.dto.user.UserResponseDTO
+import org.yamaneko.yamaneko_back_end.repository.ReleaseRepository
 import org.yamaneko.yamaneko_back_end.repository.UserRepository
 import org.yamaneko.yamaneko_back_end.service.user.UserService
 import org.yamaneko.yamaneko_back_end.utils.JwtUtil
@@ -25,6 +28,8 @@ class UserController(
   private val userRepository: UserRepository,
 ) {
   
+  @Autowired
+  private lateinit var releaseRepository: ReleaseRepository
   private val logger: Logger = LoggerFactory.getLogger(UserController::class.java)
 
 //  private val userMapper = UserMapper()
@@ -38,9 +43,11 @@ class UserController(
     val users = userService.getAllUsers()
     
     return if(users.isEmpty()) {
-      ResponseEntity.status(HttpStatus.NO_CONTENT).build()
+      ResponseEntity.status(HttpStatus.NO_CONTENT)
+        .build()
     } else {
-      ResponseEntity.status(HttpStatus.OK).body(users)
+      ResponseEntity.status(HttpStatus.OK)
+        .body(users)
     }
   }
   
@@ -50,16 +57,22 @@ class UserController(
     @RequestHeader("Authorization", required = false) authHeader: String?
   ): ResponseEntity<UserResponseDTO> {
     if(authHeader.isNullOrBlank() || ! authHeader.startsWith("Bearer ")) {
-      return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+      return ResponseEntity.status(HttpStatus.FORBIDDEN)
+        .build()
     }
     
-    val accessToken = authHeader.removePrefix("Bearer ").trim()
+    val accessToken =
+      authHeader.removePrefix("Bearer ")
+        .trim()
     val userId =
-      jwtUtil.extractUserId(accessToken)?.toLongOrNull() ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+      jwtUtil.extractUserId(accessToken)
+        ?.toLongOrNull() ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
         .build()
     
     val user =
-      userRepository.findById(userId).orElse(null) ?: return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+      userRepository.findById(userId)
+        .orElse(null) ?: return ResponseEntity.status(HttpStatus.FORBIDDEN)
+        .build()
     
     return ResponseEntity.ok(
       UserResponseDTO(
@@ -76,7 +89,9 @@ class UserController(
   @Operation(summary = "Get user by username")
   @GetMapping("/user/{username}")
   fun getUserByUsername(@PathVariable("username") username: String): ResponseEntity<UserResponseDTO> {
-    val user = userRepository.findByUsername(username) ?: return ResponseEntity.notFound().build()
+    val user =
+      userRepository.findByUsername(username) ?: return ResponseEntity.notFound()
+        .build()
     
     return ResponseEntity.ok(
       UserResponseDTO(
@@ -105,9 +120,38 @@ class UserController(
     val result = userService.updateUserData(request, username)
     
     return if(result) {
-      ResponseEntity.ok().build()
+      ResponseEntity.ok()
+        .build()
     } else {
-      ResponseEntity.notFound().build()
+      ResponseEntity.notFound()
+        .build()
     }
+  }
+  
+  @Operation(summary = "Add release to favorites")
+  @PostMapping("/watchlist/add/{releaseId}")
+  fun addReleaseToFavorites(
+    @RequestParam("releaseId") releaseId: Long, authentication: Authentication
+  ): ResponseEntity<Any> {
+    val userDetails = authentication.principal as UserDetails
+    val userId =
+      userRepository.findByUsername(userDetails.username)?.id ?: return ResponseEntity.notFound()
+        .build()
+    val user =
+      userRepository.findById(userId)
+        .get()
+    val release =
+      releaseRepository.findById(releaseId)
+        .get()
+    
+    val result = userService.addToFavorite(user, release)
+    
+    if(! result) {
+      return ResponseEntity.notFound()
+        .build()
+    }
+    
+    return ResponseEntity.ok()
+      .build()
   }
 }

@@ -5,6 +5,7 @@ import org.yamaneko.yamaneko_back_end.dto.user.UserAuthRequest
 import org.yamaneko.yamaneko_back_end.dto.user.UserDTO
 import org.yamaneko.yamaneko_back_end.dto.user.UserPatchRequestDTO
 import org.yamaneko.yamaneko_back_end.dto.user.UserRegistrationRequest
+import org.yamaneko.yamaneko_back_end.entity.Release
 import org.yamaneko.yamaneko_back_end.entity.User
 
 interface UserService {
@@ -15,6 +16,7 @@ interface UserService {
   fun generateAndSaveAccessToken(user: User): String
   fun addAchievementToUser(userId: Long, achievementId: Long): ResponseEntity<Any>
   fun updateUserData(request: UserPatchRequestDTO, username: String): Boolean
+  fun addToFavorite(user: User, release: Release): Boolean
   
   //  fun findByUsername(username: String): Optional<User>
 //  fun existByUsername(username: String): Boolean

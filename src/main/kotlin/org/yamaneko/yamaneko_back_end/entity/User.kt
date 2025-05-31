@@ -38,6 +38,15 @@ open class User(
 
 ): UserDetails {
   
+  @ManyToMany
+  @JoinTable(
+    name = "user_favorite_releases",
+    joinColumns = [JoinColumn(name = "user_id")],
+    inverseJoinColumns = [JoinColumn(name = "release_id")]
+  )
+  internal var favoriteReleases: MutableSet<Release> = mutableSetOf()
+  
+  
   @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
   internal val posts: MutableList<Post> = mutableListOf()
   
