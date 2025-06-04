@@ -4,11 +4,14 @@ import org.springframework.stereotype.Service
 import org.yamaneko.yamaneko_back_end.dto.wishlist.WishListId
 import org.yamaneko.yamaneko_back_end.entity.WishList
 import org.yamaneko.yamaneko_back_end.repository.WishListRepository
+import org.yamaneko.yamaneko_back_end.service.release.ReleaseService
 import org.yamaneko.yamaneko_back_end.utils.DateFormatter
 import java.util.*
 
 @Service
-class WishListServiceImpl(private val wishListRepository: WishListRepository): WishListService {
+class WishListServiceImpl(
+  private val wishListRepository: WishListRepository, private val releaseService: ReleaseService
+): WishListService {
   
   private val dateFormatter = DateFormatter()
   
@@ -29,9 +32,13 @@ class WishListServiceImpl(private val wishListRepository: WishListRepository): W
     
     if(isRecord != null) return false
     
+    val release = releaseService.getReleaseById(wishList.releaseId)
+    
     val record = WishList().apply {
       id = WishListId(wishList.userId, wishList.releaseId)
       addedAt = dateFormatter.dateToString(Date())
+      name = release?.translatedName
+      image = release?.posterImageUrl
     }
     
     return try {

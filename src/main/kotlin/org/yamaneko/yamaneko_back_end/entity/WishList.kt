@@ -13,5 +13,7 @@ class WishList {
   var id: WishListId = WishListId()
   
   var addedAt: String? = null
+  var image: String? = null
+  var name: String? = null
   var rating: Int? = null
 }
