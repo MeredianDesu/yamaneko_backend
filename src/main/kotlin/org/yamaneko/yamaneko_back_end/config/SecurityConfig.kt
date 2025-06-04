@@ -43,12 +43,13 @@ class SecurityConfig(
             "/api/post/v1/{id}",
             "/api/team/**",
             "/api/genres/**",
+            "/api/wishlist/**",
           )
           .permitAll()
-          .requestMatchers("/api/users/v1/watchlist/**")
-          .hasAnyAuthority(
-            Role.ROLE_USER.name, Role.ROLE_ADMIN.name
-          )
+//          .requestMatchers("/api/users/v1/watchlist/**")
+//          .hasAnyAuthority(
+//            Role.ROLE_USER.name, Role.ROLE_ADMIN.name
+//          )
 //          .requestMatchers(
 //            "/api/users/**", "/api/banners/**", "/api/characters/**", , "/api/news/**",
 ////            "/api/files/**",

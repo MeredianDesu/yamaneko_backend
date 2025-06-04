@@ -7,8 +7,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.core.Authentication
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import org.yamaneko.yamaneko_back_end.dto.user.UserDTO
@@ -127,31 +125,31 @@ class UserController(
         .build()
     }
   }
-  
-  @Operation(summary = "Add release to favorites")
-  @PostMapping("/watchlist/add/{releaseId}")
-  fun addReleaseToFavorites(
-    @RequestParam("releaseId") releaseId: Long, authentication: Authentication
-  ): ResponseEntity<Any> {
-    val userDetails = authentication.principal as UserDetails
-    val userId =
-      userRepository.findByUsername(userDetails.username)?.id ?: return ResponseEntity.notFound()
-        .build()
-    val user =
-      userRepository.findById(userId)
-        .get()
-    val release =
-      releaseRepository.findById(releaseId)
-        .get()
-    
-    val result = userService.addToFavorite(user, release)
-    
-    if(! result) {
-      return ResponseEntity.notFound()
-        .build()
-    }
-    
-    return ResponseEntity.ok()
-      .build()
-  }
+
+//  @Operation(summary = "Add release to favorites")
+//  @PostMapping("/watchlist/add/{releaseId}")
+//  fun addReleaseToFavorites(
+//    @RequestParam("releaseId") releaseId: Long, authentication: Authentication
+//  ): ResponseEntity<Any> {
+//    val userDetails = authentication.principal as UserDetails
+//    val userId =
+//      userRepository.findByUsername(userDetails.username)?.id ?: return ResponseEntity.notFound()
+//        .build()
+//    val user =
+//      userRepository.findById(userId)
+//        .get()
+//    val release =
+//      releaseRepository.findById(releaseId)
+//        .get()
+//
+//    val result = userService.addToFavorite(user, release)
+//
+//    if(! result) {
+//      return ResponseEntity.notFound()
+//        .build()
+//    }
+//
+//    return ResponseEntity.ok()
+//      .build()
+//  }
 }
