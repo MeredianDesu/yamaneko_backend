@@ -73,6 +73,8 @@ class UserServiceImpl: UserService {
     
     userRepository.save(user)
     
+    addAchievementToUser(user.id, 1)
+    
     val token = jwtUtil.generateToken(user)
     val refreshToken = jwtUtil.generateRefreshToken()
     
