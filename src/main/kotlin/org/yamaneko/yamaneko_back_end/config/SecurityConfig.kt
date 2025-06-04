@@ -57,7 +57,9 @@ class SecurityConfig(
 //          )
 //          .hasAuthority(Role.ROLE_USER.name)
           .requestMatchers(HttpMethod.PATCH, "/api/users/v1/{username}")
-          .hasAuthority(Role.ROLE_ADMIN.name)
+          .hasAnyAuthority(
+            Role.ROLE_ADMIN.name, Role.ROLE_USER.name, Role.ROLE_DUBBER.name
+          )
           .requestMatchers(HttpMethod.POST, "/api/releases/**")
           .hasAuthority(Role.ROLE_ADMIN.name)
           .requestMatchers(HttpMethod.PATCH, "/api/releases/**")
