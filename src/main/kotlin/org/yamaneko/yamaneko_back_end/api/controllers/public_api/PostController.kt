@@ -24,7 +24,9 @@ class PostController(
   
   @GetMapping("{id}")
   fun getPosts(@PathVariable id: Long): ResponseEntity<Any> {
-    val posts = postService.getPosts(id)
+    val posts =
+      postService.getPosts(id)
+        ?.sortedByDescending { it.createdAt }
     
     return if(posts.isNullOrEmpty()) {
       ResponseEntity.notFound()

@@ -26,7 +26,9 @@ class AchievementServiceImpl(
   
   override fun getUserAchievements(userId: Long): List<UserAchievementDTO>? {
     
-    return userAchievementRepository.findByUserId(userId).map { achievementMapper.toUserAchievementDTO(it) }
+    return userAchievementRepository.findByUserId(userId)
+      .map { achievementMapper.toUserAchievementDTO(it) }
+      .sortedByDescending { it.receivedAt }
   }
   
   override fun createAchievement(achievement: AchievementRequestDTO): AchievementDTO? {
@@ -46,9 +48,11 @@ class AchievementServiceImpl(
     
     return if(achievement.isPresent) {
       achievementRepository.deleteById(achievementId)
-      ResponseEntity.ok().build()
+      ResponseEntity.ok()
+        .build()
     } else {
-      ResponseEntity.notFound().build()
+      ResponseEntity.notFound()
+        .build()
     }
   }
 }
