@@ -30,14 +30,30 @@ class DataInitializer(
       achievementRepository.save(achievement)
       
       achievement = Achievement(
-        name = "Code Sorcerer", image = "", condition = "Awarded for completing the first milestone in development."
+        name = "Code Sorcerer",
+        image = "https://yamanekospace.fra1.cdn.digitaloceanspaces.com/achievements/Code%20Sorcerer",
+        condition = "Awarded for completing the first milestone in development."
       )
       achievementRepository.save(achievement)
       
       achievement = Achievement(
         name = "Legendary Developer",
-        image = "",
+        image = "https://yamanekospace.fra1.cdn.digitaloceanspaces.com/achievements/Legendary%20Developer",
         condition = "Awarded when a developer completes a major feature or release."
+      )
+      achievementRepository.save(achievement)
+      
+      achievement = Achievement(
+        name = "Nani?! Five Picks",
+        image = "https://yamanekospace.fra1.cdn.digitaloceanspaces.com/achievements/Nani?%20Five%20Picks!",
+        condition = "Awarded when 5 releases are added to favorites."
+      )
+      achievementRepository.save(achievement)
+      
+      achievement = Achievement(
+        name = "Senpai's First Spark",
+        image = "https://yamanekospace.fra1.cdn.digitaloceanspaces.com/achievements/Senpai's%20First%20Spark",
+        condition = "Awarded when a user creates their first post, igniting their journey in the community."
       )
       achievementRepository.save(achievement)
     }
